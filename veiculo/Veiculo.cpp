@@ -26,5 +26,21 @@ void Veiculo::setVelocidade(int vel)
 
 void Veiculo::print()
 {
-    std::cout << "Veiculo " << this->ID << "; V = " << this->velocidade << std::endl;
+    std::cout << "Veiculo " << this->ID << "; V = " << this->velocidade << "; P(" << road << ", " << posRoad << ")" << std::endl;
+}
+
+int Veiculo::getRoad()
+{
+    return road;
+}
+
+int Veiculo::getPosRoad()
+{
+    return posRoad;
+}
+
+void Veiculo::setPos(int road, int posRoad)
+{
+    this->road = road;
+    this->posRoad = posRoad;
 }

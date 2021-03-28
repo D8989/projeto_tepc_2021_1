@@ -6,6 +6,7 @@ class Veiculo
 private:
     unsigned int ID;
     int velocidade;
+    int road, posRoad; // posicao do ve'iculo na malha
 
 public:
     Veiculo(int, int);
@@ -15,6 +16,9 @@ public:
     int getVelocidade();
     void setVelocidade(int);
     void print();
+    int getRoad();
+    int getPosRoad();
+    void setPos(int road, int posRoad);
 };
 
 #endif
