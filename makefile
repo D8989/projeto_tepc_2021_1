@@ -1,2 +1,2 @@
 all:
-	g++ main.cpp automata/Automata.cpp -o a.out
+	g++ main.cpp automata/Automata.cpp veiculo/Veiculo.cpp -o a.out
