@@ -4,10 +4,17 @@
 class Veiculo
 {
 private:
-    /* data */
+    unsigned int ID;
+    int velocidade;
+
 public:
-    Veiculo(/* args */);
+    Veiculo(int, int);
     ~Veiculo();
+
+    unsigned int getId();
+    int getVelocidade();
+    void setVelocidade(int);
+    void print();
 };
 
 #endif
