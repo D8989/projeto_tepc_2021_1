@@ -3,10 +3,8 @@
 #include <iostream>
 #include <stdlib.h>
 
-Automata::Automata(unsigned int size, unsigned int qtd, double vMax, bool isClosed) : sizeRoad(size),
-                                                                                      qtdRoad(qtd),
-                                                                                      velocityMax(vMax),
-                                                                                      isClosedSystem(isClosed)
+Automata::Automata(unsigned int size, unsigned int qtd) : sizeRoad(size),
+                                                          qtdRoad(qtd)
 {
     this->automato = new int[size * qtd];
     memset(automato, -0x1, size * qtd * sizeof(int));
