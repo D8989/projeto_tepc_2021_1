@@ -193,22 +193,15 @@ void Simulacao::passoPosicao()
     }
 }
 
-void Simulacao::run(int qtdPassos, int createFile)
+void Simulacao::run(int qtdPassos)
 {
-    if (createFile)
+    if (file == NULL)
     {
-        if (file == NULL)
-        {
-            runWithPrint(qtdPassos, &std::cout);
-        }
-        else
-        {
-            runWithPrint(qtdPassos, file->getStream());
-        }
+        runWithPrint(qtdPassos, &std::cout);
     }
     else
     {
-        runWithoutPrint(qtdPassos);
+        runWithPrint(qtdPassos, file->getStream());
     }
 }
 

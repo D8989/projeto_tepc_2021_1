@@ -32,7 +32,7 @@ public:
 
     void passoVelocidade();
     void passoPosicao();
-    void run(int qtdPassos, int createFile);
+    void run(int qtdPassos);
 
     void print();
     void printPasso(std::ostream *out);
