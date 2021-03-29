@@ -21,7 +21,7 @@ int Veiculo::getVelocidade()
 
 void Veiculo::setVelocidade(int vel)
 {
-    this->velocidade = vel;
+    this->velocidade = vel < 0 ? 0 : vel;
 }
 
 void Veiculo::print()
