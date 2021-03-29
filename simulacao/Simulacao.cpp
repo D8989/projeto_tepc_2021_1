@@ -1,7 +1,5 @@
 #include "Simulacao.hpp"
 #include <stdlib.h>
-// #include <cstdlib>
-#include <ctime>
 #include <iostream>
 
 Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax) : qtdRoad(qtdRoads), sizeRoad(sizeRoad), qtdVeiculos(qtdVeiculos), velocityMax(vMax)
@@ -21,6 +19,7 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax) : qt
             if (estadoAtual->getCell(randomRoad, posRoad) == EMPTY_CELL)
             {
                 estadoAtual->setCell(randomRoad, posRoad, veiculos[i]->getId());
+                veiculos[i]->setPos(randomRoad, posRoad);
                 veicSet = true;
             }
         }
@@ -38,17 +37,19 @@ Simulacao::~Simulacao()
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         delete this->veiculos[i];
-        std::cout << "VEICULO " << i << " FREE\n";
     }
 
     free(this->veiculos);
-    std::cout << "VETOR VEICULOS FREE\n";
 }
 
 int Simulacao::myRandom(int min, int max)
 {
-    srand(time(NULL)); // Seed the time
     return rand() % (max - min) + min;
+}
+
+double Simulacao::myRandom()
+{
+    return ((double)rand() / (RAND_MAX));
 }
 
 void Simulacao::copyAtualToAnterior()
@@ -59,6 +60,146 @@ void Simulacao::copyAtualToAnterior()
         {
             estadoAnterior->setCell(i, j, estadoAtual->getCell(i, j));
         }
+    }
+}
+
+Veiculo *Simulacao::getNextCar(Veiculo *v) const
+{
+    int x = v->getRoad();
+    int y = v->getPosRoad();
+    bool foundNextCar = false;
+    int count = 0;
+    int nextCarId = 0;
+
+    while (!foundNextCar)
+    {
+        y++;
+        count++;
+        if (y == sizeRoad)
+        { // road circular
+            y = 0;
+        }
+        int veiculoIndex = estadoAnterior->getCell(x, y);
+        if (veiculoIndex != EMPTY_CELL)
+        {
+            if (v->getId() == veiculos[veiculoIndex]->getId())
+            {
+                std::cout << "ERROR::SIMULACAO::NEXTCAR::ACHOU O MESMO CARRO\n";
+                this->~Simulacao();
+                exit(EXIT_FAILURE);
+            }
+            nextCarId = veiculoIndex;
+            foundNextCar = true;
+        }
+        if (count > sizeRoad)
+        {
+            std::cout << "ERROR::SIMULACAO::NEXTCAR::NAO_ACHOU NENHUM CARRO\n";
+            this->~Simulacao();
+            exit(EXIT_FAILURE);
+        }
+    }
+    return veiculos[nextCarId];
+}
+
+int Simulacao::distanceNextCar(Veiculo *v) const
+{
+    int x = v->getRoad();
+    int y = v->getPosRoad();
+    bool nextCarFounded = false;
+    int count = 0;
+
+    while (!nextCarFounded)
+    {
+        y++;
+        count++;
+        if (y == sizeRoad)
+        { // road circular
+            y = 0;
+        }
+        int cell = estadoAnterior->getCell(x, y);
+        if (cell != EMPTY_CELL)
+        {
+            if (count == sizeRoad)
+            {
+                std::cout << "ERROR::SIMULACAO::distanceNextCar::ENCONTROU ELE MESMO\n";
+                this->~Simulacao();
+                exit(EXIT_FAILURE);
+            }
+            nextCarFounded = true;
+        }
+        if (count >= sizeRoad)
+        {
+            std::cout << "ERROR::SIMULACAO::distanceNextCar::NAO_ACHOU NENHUM CARRO\n";
+            this->~Simulacao();
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    return count;
+}
+
+void Simulacao::passoVelocidade()
+{
+    for (size_t i = 0; i < qtdVeiculos; i++)
+    {
+        int carVelocidade = veiculos[i]->getVelocidade();
+        int distNextCar = distanceNextCar(veiculos[i]);
+        int novaVelocidade = carVelocidade;
+
+        if (carVelocidade < velocityMax && distNextCar > carVelocidade + 1)
+        {
+            novaVelocidade = carVelocidade + 1;
+        }
+        else if (carVelocidade > distNextCar)
+        {
+            novaVelocidade = distNextCar - 1;
+        }
+
+        if (novaVelocidade != 0 && myRandom() < 0.25)
+        {
+            if (novaVelocidade > 0)
+            {
+                novaVelocidade--;
+            }
+        }
+
+        veiculos[i]->setVelocidade(novaVelocidade);
+    }
+}
+
+void Simulacao::passoPosicao()
+{
+    for (size_t i = 0; i < qtdVeiculos; i++)
+    {
+        int road = veiculos[i]->getRoad();
+        int posRoad = veiculos[i]->getPosRoad();
+        int velocidade = veiculos[i]->getVelocidade();
+
+        int novaPosRoad = 0;
+        if (posRoad + velocidade >= sizeRoad)
+        {
+            int falta = sizeRoad - posRoad - 1;
+            novaPosRoad = velocidade - falta;
+        }
+        else
+        {
+            novaPosRoad = posRoad + velocidade;
+        }
+
+        estadoAtual->setCell(road, posRoad, EMPTY_CELL);
+        estadoAtual->setCell(road, novaPosRoad, veiculos[i]->getId());
+        veiculos[i]->setPos(road, novaPosRoad);
+    }
+}
+
+void Simulacao::run(int qtdPassos)
+{
+    for (size_t i = 0; i < qtdPassos; i++)
+    {
+        printPasso();
+        passoVelocidade();
+        passoPosicao();
+        copyAtualToAnterior();
     }
 }
 
