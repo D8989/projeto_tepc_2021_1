@@ -7,6 +7,14 @@ Arquivo::Arquivo()
 
 Arquivo::~Arquivo()
 {
+    if (file.is_open())
+    {
+        file.close();
+    }
+    if (ofFile.is_open())
+    {
+        ofFile.close();
+    }
 }
 
 void Arquivo::open(const char *pathFileName)
@@ -30,4 +38,9 @@ void Arquivo::write(const char *line)
 
 void Arquivo::writeBin(char *pointer, int size)
 {
+}
+
+std::ofstream *Arquivo::getStream()
+{
+    return &this->ofFile;
 }

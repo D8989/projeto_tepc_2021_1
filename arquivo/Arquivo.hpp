@@ -17,6 +17,7 @@ public:
     void openBin(const char *pathFileName);
     void write(const char *line);
     void writeBin(char *, int);
+    std::ofstream *getStream();
 };
 
 #endif
