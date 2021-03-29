@@ -33,3 +33,6 @@
 
 # Files vsCode
 .vscode/*
+
+# Results Files
+*.txt
