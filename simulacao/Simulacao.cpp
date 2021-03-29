@@ -4,6 +4,7 @@
 
 Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax) : qtdRoad(qtdRoads), sizeRoad(sizeRoad), qtdVeiculos(qtdVeiculos), velocityMax(vMax)
 {
+    this->file = NULL;
     this->estadoAtual = new Automata(sizeRoad, qtdRoads);
     this->veiculos = (Veiculo **)malloc(sizeof(Veiculo *) * qtdVeiculos);
     for (size_t i = 0; i < qtdVeiculos; i++)
@@ -192,11 +193,40 @@ void Simulacao::passoPosicao()
     }
 }
 
-void Simulacao::run(int qtdPassos)
+void Simulacao::run(int qtdPassos, int createFile)
+{
+    if (createFile)
+    {
+        if (file == NULL)
+        {
+            runWithPrint(qtdPassos, &std::cout);
+        }
+        else
+        {
+            runWithPrint(qtdPassos, file->getStream());
+        }
+    }
+    else
+    {
+        runWithoutPrint(qtdPassos);
+    }
+}
+
+void Simulacao::runWithPrint(int qtdPassos, std::ostream *out)
 {
     for (size_t i = 0; i < qtdPassos; i++)
     {
-        printPasso();
+        printPasso(out);
+        passoVelocidade();
+        passoPosicao();
+        copyAtualToAnterior();
+    }
+}
+
+void Simulacao::runWithoutPrint(int qtdPassos)
+{
+    for (size_t i = 0; i < qtdPassos; i++)
+    {
         passoVelocidade();
         passoPosicao();
         copyAtualToAnterior();
@@ -219,9 +249,9 @@ void Simulacao::print()
     }
 }
 
-void Simulacao::printPasso()
+void Simulacao::printPasso(std::ostream *out)
 {
-    std::cout << "\t";
+    *out << "\t";
     for (size_t i = 0; i < qtdRoad; i++)
     {
         for (size_t j = 0; j < sizeRoad; j++)
@@ -229,13 +259,18 @@ void Simulacao::printPasso()
             int veicId = estadoAtual->getCell(i, j);
             if (veicId == EMPTY_CELL)
             {
-                std::cout << "-";
+                *out << "-";
             }
             else
             {
-                std::cout << veiculos[veicId]->getVelocidade();
+                *out << veiculos[veicId]->getVelocidade();
             }
         }
-        std::cout << std::endl;
+        *out << std::endl;
     }
+}
+
+void Simulacao::setFile(Arquivo *file)
+{
+    this->file = file;
 }

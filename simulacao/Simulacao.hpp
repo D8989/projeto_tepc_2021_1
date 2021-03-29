@@ -3,6 +3,8 @@
 
 #include "../automata/Automata.hpp"
 #include "../veiculo/Veiculo.hpp"
+#include "../arquivo/Arquivo.hpp"
+#include <ostream>
 
 class Simulacao
 {
@@ -10,6 +12,7 @@ private:
     Automata *estadoAtual;
     Automata *estadoAnterior;
     Veiculo **veiculos;
+    Arquivo *file;
     int velocityMax;
     int qtdRoad;
     int sizeRoad;
@@ -20,6 +23,8 @@ private:
     void copyAtualToAnterior();
     Veiculo *getNextCar(Veiculo *) const;
     int distanceNextCar(Veiculo *) const;
+    void runWithPrint(int qtdPassos, std::ostream *out);
+    void runWithoutPrint(int qtdPassos);
 
 public:
     Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax);
@@ -27,10 +32,11 @@ public:
 
     void passoVelocidade();
     void passoPosicao();
-    void run(int qtdPassos);
+    void run(int qtdPassos, int createFile);
 
     void print();
-    void printPasso();
+    void printPasso(std::ostream *out);
+    void setFile(Arquivo *file);
 };
 
 #endif
