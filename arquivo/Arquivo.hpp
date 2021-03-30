@@ -18,6 +18,7 @@ public:
     void write(const char *line);
     void writeBin(char *, int);
     std::ofstream *getStream();
+    std::string montarNome(const char **nomes, int size);
 };
 
 #endif
