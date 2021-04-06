@@ -151,12 +151,12 @@ void Simulacao::passoVelocidade()
         {
             novaVelocidade = carVelocidade + 1;
         }
-        else if (carVelocidade > distNextCar)
+        else if (carVelocidade >= distNextCar)
         {
             novaVelocidade = distNextCar - 1;
         }
 
-        if (novaVelocidade != 0 && myRandom() < 0.25)
+        if (myRandom() < 0.25)
         {
             if (novaVelocidade > 0)
             {
@@ -170,6 +170,7 @@ void Simulacao::passoVelocidade()
 
 void Simulacao::passoPosicao()
 {
+    estadoAtual->cleanAutomato();
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         int road = veiculos[i]->getRoad();
@@ -179,15 +180,19 @@ void Simulacao::passoPosicao()
         int novaPosRoad = 0;
         if (posRoad + velocidade >= sizeRoad)
         {
-            int falta = sizeRoad - posRoad - 1;
-            novaPosRoad = velocidade - falta;
+            novaPosRoad = velocidade - (sizeRoad - posRoad);
         }
         else
         {
             novaPosRoad = posRoad + velocidade;
         }
 
-        estadoAtual->setCell(road, posRoad, EMPTY_CELL);
+        if (estadoAtual->getCell(road, novaPosRoad) != EMPTY_CELL)
+        {
+            std::cout << "ERROR::SIMULACAO::passoPosicao::Celula (" << road << ", " << novaPosRoad << ") está ocupada com o carro " << estadoAtual->getCell(road, novaPosRoad) << "; não está livre para colocar o carro " << veiculos[i]->getId() << std::endl;
+            this->~Simulacao();
+            exit(EXIT_FAILURE);
+        }
         estadoAtual->setCell(road, novaPosRoad, veiculos[i]->getId());
         veiculos[i]->setPos(road, novaPosRoad);
     }
