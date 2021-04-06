@@ -57,3 +57,8 @@ void Automata::setCell(int i, int j, int carIndex)
 {
     this->automato[pos(i, j)] = carIndex;
 }
+
+void Automata::cleanAutomato()
+{
+    memset(automato, -0x1, this->sizeRoad * this->qtdRoad * sizeof(int));
+}

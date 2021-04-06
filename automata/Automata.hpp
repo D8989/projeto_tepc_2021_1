@@ -20,6 +20,7 @@ public:
     void print();
     int getCell(int, int);
     void setCell(int, int, int);
+    void cleanAutomato();
 };
 
 #endif
