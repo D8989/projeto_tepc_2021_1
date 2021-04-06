@@ -26,16 +26,8 @@ int main(int argc, const char *argv[])
 
     if (salvarEmArquivo)
     {
-        std::string str("resultado_simples_");
-        str.append(argv[1]);
-        str.append("_");
-        str.append(argv[2]);
-        str.append("_");
-        str.append(argv[4]);
-        str.append("_");
-        str.append(argv[5]);
-        str.append(".txt");
-
+        const char *param[] = {"ressult",argv[1],argv[2],argv[4],argv[5]};
+        std::string str = arq->montarNome(param, 5);
         arq->open(str.c_str());
         s.setFile(arq);
     }
