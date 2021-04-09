@@ -112,7 +112,7 @@ int Simulacao::distanceNextCar(Veiculo *v) const
     bool nextCarFounded = false;
     int count = 0;
 
-    while (!nextCarFounded)
+    while (!(count == this->velocityMax + 1) && !nextCarFounded)
     {
         y++;
         count++;
