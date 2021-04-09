@@ -15,12 +15,12 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax) : qt
         bool veicSet = false;
         while (!veicSet)
         {
-            int randomRoad = myRandom(0, qtdRoads);
+            int road = qtdRoads - 1;
             int posRoad = myRandom(0, sizeRoad);
-            if (estadoAtual->getCell(randomRoad, posRoad) == EMPTY_CELL)
+            if (estadoAtual->getCell(road, posRoad) == EMPTY_CELL)
             {
-                estadoAtual->setCell(randomRoad, posRoad, veiculos[i]->getId());
-                veiculos[i]->setPos(randomRoad, posRoad);
+                estadoAtual->setCell(road, posRoad, veiculos[i]->getId());
+                veiculos[i]->setPos(road, posRoad);
                 veicSet = true;
             }
         }
