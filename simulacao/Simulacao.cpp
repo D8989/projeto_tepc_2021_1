@@ -233,10 +233,10 @@ void Simulacao::runWithoutPrint(int qtdPassos)
 
 void Simulacao::print()
 {
-    std::cout << "ATUAL:";
+    std::cout << "ATUAL:" << std::endl;
     estadoAtual->print();
     std::cout << std::endl;
-    std::cout << "ANTERIOR:";
+    std::cout << "ANTERIOR:" << std::endl;
     estadoAnterior->print();
     std::cout << std::endl;
 
@@ -249,9 +249,9 @@ void Simulacao::print()
 
 void Simulacao::printPasso(std::ostream *out)
 {
-    *out << "\t";
     for (size_t i = 0; i < qtdRoad; i++)
     {
+        *out << "[" << i << "]\t";
         for (size_t j = 0; j < sizeRoad; j++)
         {
             int veicId = estadoAtual->getCell(i, j);
@@ -266,6 +266,7 @@ void Simulacao::printPasso(std::ostream *out)
         }
         *out << std::endl;
     }
+    *out << std::endl;
 }
 
 void Simulacao::setFile(Arquivo *file)

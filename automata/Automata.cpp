@@ -29,9 +29,9 @@ int Automata::pos(int x, int y)
 
 void Automata::print()
 {
-    std::cout << "=> ";
-    for (size_t i = 0; i < qtdRoad; i++)
+    for (size_t i = 0; i <  qtdRoad; i++)
     {
+        std::cout << "fixa(" << i << ")\t";
         for (size_t j = 0; j < sizeRoad; j++)
         {
             int cell = getCell(i, j);
@@ -46,6 +46,7 @@ void Automata::print()
         }
         std::cout << std::endl;
     }
+    std::cout << std::endl;
 }
 
 int Automata::getCell(int i, int j)
