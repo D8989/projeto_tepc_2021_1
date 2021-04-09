@@ -43,6 +43,9 @@ Simulacao::~Simulacao()
     free(this->veiculos);
 }
 
+/**
+ * O valor retornado é entre [min, max)
+**/
 int Simulacao::myRandom(int min, int max)
 {
     return rand() % (max - min) + min;
