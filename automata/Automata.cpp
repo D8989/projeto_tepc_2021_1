@@ -24,7 +24,7 @@ int Automata::pos(int x, int y)
         this->~Automata();
         exit(EXIT_FAILURE);
     }
-    return x * qtdRoad + y;
+    return x * sizeRoad + y;
 }
 
 void Automata::print()
