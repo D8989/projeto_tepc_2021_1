@@ -29,7 +29,7 @@ int Automata::pos(int x, int y)
 
 void Automata::print()
 {
-    for (size_t i = 0; i <  qtdRoad; i++)
+    for (size_t i = 0; i < qtdRoad; i++)
     {
         std::cout << "fixa(" << i << ")\t";
         for (size_t j = 0; j < sizeRoad; j++)
