@@ -6,6 +6,12 @@
 #include "../arquivo/Arquivo.hpp"
 #include <ostream>
 
+enum Direcao
+{
+    left_to_rigth,
+    rigth_to_left,
+};
+
 class Simulacao
 {
 private:
