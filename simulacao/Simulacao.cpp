@@ -105,9 +105,9 @@ Veiculo *Simulacao::getNextCar(Veiculo *v) const
     return veiculos[nextCarId];
 }
 
-int Simulacao::distanceNextCar(Veiculo *v) const
+int Simulacao::distanceNextCar(Veiculo *v, int road) const
 {
-    int x = v->getRoad();
+    int x = road;
     int y = v->getPosRoad();
     bool nextCarFounded = false;
     int count = 0;
@@ -147,7 +147,7 @@ void Simulacao::passoVelocidade()
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         int carVelocidade = veiculos[i]->getVelocidade();
-        int distNextCar = distanceNextCar(veiculos[i]);
+        int distNextCar = distanceNextCar(veiculos[i], veiculos[i]->getRoad());
         int novaVelocidade = carVelocidade;
 
         if (carVelocidade < velocityMax && distNextCar > carVelocidade + 1)

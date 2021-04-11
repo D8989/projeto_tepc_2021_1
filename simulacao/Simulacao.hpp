@@ -28,7 +28,7 @@ private:
     double myRandom();
     void copyAtualToAnterior();
     Veiculo *getNextCar(Veiculo *) const;
-    int distanceNextCar(Veiculo *) const;
+    int distanceNextCar(Veiculo *, int) const;
     void runWithPrint(int qtdPassos, std::ostream *out);
     void runWithoutPrint(int qtdPassos);
 
