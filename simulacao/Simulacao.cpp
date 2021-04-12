@@ -105,6 +105,33 @@ Veiculo *Simulacao::getNextCar(Veiculo *v) const
     return veiculos[nextCarId];
 }
 
+Veiculo *Simulacao::getPreviousCar(Veiculo *car) const
+{
+    int x = car->getRoad();
+    int y = car->getPosRoad();
+    bool foundPreviousCar = false;
+    int count = 0;
+    int previousCarId = INVALID_INDEX;
+
+    while (!(count == this->velocityMax + 1) && !foundPreviousCar)
+    {
+        y--;
+        count++;
+        if (y < 0)
+        { // road circular
+            y = sizeRoad - 1;
+        }
+
+        int veiculoIndex = estadoAnterior->getCell(x, y);
+        if (veiculoIndex != EMPTY_CELL)
+        {
+            previousCarId = veiculoIndex;
+            foundPreviousCar = true;
+        }
+    }
+    return previousCarId == INVALID_INDEX ? nullptr : veiculos[previousCarId];
+}
+
 int Simulacao::distanceNextCar(Veiculo *v, int road) const
 {
     int x = road;

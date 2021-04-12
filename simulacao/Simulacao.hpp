@@ -6,6 +6,8 @@
 #include "../arquivo/Arquivo.hpp"
 #include <ostream>
 
+#define INVALID_INDEX -3
+
 enum Direcao
 {
     left_to_rigth,
@@ -28,6 +30,7 @@ private:
     double myRandom();
     void copyAtualToAnterior();
     Veiculo *getNextCar(Veiculo *) const;
+    Veiculo *getPreviousCar(Veiculo *) const;
     int distanceNextCar(Veiculo *, int) const;
     void runWithPrint(int qtdPassos, std::ostream *out);
     void runWithoutPrint(int qtdPassos);
