@@ -34,6 +34,10 @@ private:
     int distanceNextCar(Veiculo *, int) const;
     void runWithPrint(int qtdPassos, std::ostream *out);
     void runWithoutPrint(int qtdPassos);
+    int getVeiculoSideRoad(int roadAtual, Direcao dir);
+    bool regraModifacaoLR(Veiculo *veiculo);
+    bool regraModifacaoRL(Veiculo *veiculo);
+    bool regraModifacao(int veicId, Direcao dir);
 
 public:
     Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax);
@@ -46,6 +50,8 @@ public:
     void print();
     void printPasso(std::ostream *out);
     void setFile(Arquivo *file);
+
+    void changeRoad();
 };
 
 #endif

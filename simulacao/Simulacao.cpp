@@ -246,6 +246,7 @@ void Simulacao::runWithPrint(int qtdPassos, std::ostream *out)
     {
         printPasso(out);
         passoVelocidade();
+        changeRoad();
         passoPosicao();
         copyAtualToAnterior();
     }
@@ -302,4 +303,91 @@ void Simulacao::printPasso(std::ostream *out)
 void Simulacao::setFile(Arquivo *file)
 {
     this->file = file;
+}
+
+void Simulacao::changeRoad()
+{
+    for (size_t i = 0; i < qtdVeiculos; i++)
+    {
+        if (regraModifacaoRL(veiculos[i]) /* && regraSegurancaRL(veiculos[i]) */)
+        {
+            // mudar pista do veículo para esquerda
+        }
+        else if (regraModifacaoLR(veiculos[i]) /* && regraSegurancaRL(veiculos[i]) */)
+        {
+            // mudar pista do veículo para direita
+        }
+    }
+}
+
+int Simulacao::getVeiculoSideRoad(int roadAtual, Direcao dir)
+{
+    int sideRoad;
+    if (dir == Direcao::left_to_rigth)
+    {
+        sideRoad = roadAtual - 1;
+        return sideRoad >= 0 ? sideRoad : OUT_BOUND;
+    }
+    else if (dir == Direcao::rigth_to_left)
+    {
+        sideRoad = roadAtual + 1;
+        return sideRoad < qtdRoad ? sizeRoad : OUT_BOUND;
+    }
+    else
+    {
+        std::cout << "ERROR::SIMULACAO::getVeiculoSideRoad::Direcao desconhecida" << std::endl;
+        this->~Simulacao();
+        exit(EXIT_FAILURE);
+    }
+}
+
+bool Simulacao::regraModifacao(int veicId, Direcao dir)
+{
+    if (dir == Direcao::left_to_rigth)
+    {
+        return this->regraModifacaoLR(this->veiculos[veicId]);
+    }
+    else if (dir == Direcao::rigth_to_left)
+    {
+        return this->regraModifacaoRL(this->veiculos[veicId]);
+    }
+    else
+    {
+        std::cout << "ERROR::SIMULACAO::regraModifacao::Direcao desconhecida" << std::endl;
+        this->~Simulacao();
+        exit(EXIT_FAILURE);
+    }
+}
+
+bool Simulacao::regraModifacaoLR(Veiculo *veiculo) // pista rapida para pista normal
+{
+    int rigthRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::left_to_rigth);
+    if (rigthRoad == OUT_BOUND || estadoAnterior->getCell(rigthRoad, veiculo->getPosRoad()) != EMPTY_CELL)
+    {
+        return false;
+    }
+
+    Veiculo *previousCar = getPreviousCar(veiculo);
+    if (!previousCar)
+    {
+        return false;
+    }
+
+    int distancePrevious = distanceNextCar(previousCar, previousCar->getRoad());
+
+    return previousCar->getVelocidade() > veiculo->getVelocidade() && distancePrevious < previousCar->getVelocidade();
+}
+
+bool Simulacao::regraModifacaoRL(Veiculo *veiculo) // pista normal para pista rapida
+{
+    int leftRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::rigth_to_left);
+    if (leftRoad == OUT_BOUND || estadoAnterior->getCell(leftRoad, veiculo->getPosRoad()) != EMPTY_CELL)
+    {
+        return false;
+    }
+
+    int distanceRoadCar = distanceNextCar(veiculo, veiculo->getRoad());
+    int distanceLeftRoadCar = distanceNextCar(veiculo, leftRoad);
+
+    return veiculo->getVelocidade() > distanceRoadCar && veiculo->getVelocidade() < distanceLeftRoadCar;
 }
