@@ -166,7 +166,7 @@ int Simulacao::distanceNextCar(Veiculo *v, int road) const
         }
     }
 
-    return count;
+    return count - v->getTamanho();
 }
 
 int Simulacao::distancePreviousCar(Veiculo *v, int road) const
@@ -197,7 +197,7 @@ int Simulacao::distancePreviousCar(Veiculo *v, int road) const
         }
     }
 
-    return count;
+    return count - v->getTamanho();
 }
 
 void Simulacao::passoVelocidade()
@@ -208,13 +208,13 @@ void Simulacao::passoVelocidade()
         int distNextCar = distanceNextCar(veiculos[i], veiculos[i]->getRoad());
         int novaVelocidade = carVelocidade;
 
-        if (carVelocidade < velocityMax && distNextCar > carVelocidade + 1)
+        if (carVelocidade < velocityMax && distNextCar >= carVelocidade + 1)
         {
             novaVelocidade = carVelocidade + 1;
         }
         else if (carVelocidade >= distNextCar)
         {
-            novaVelocidade = distNextCar - 1;
+            novaVelocidade = distNextCar;
         }
 
         if (myRandom() < 0.25)
@@ -432,7 +432,7 @@ bool Simulacao::regraModifacaoRL(Veiculo *veiculo) // pista normal para pista ra
     int distanceRoadCar = distanceNextCar(veiculo, veiculo->getRoad());
     int distanceLeftRoadCar = distanceNextCar(veiculo, leftRoad);
 
-    return veiculo->getVelocidade() > distanceRoadCar && veiculo->getVelocidade() < distanceLeftRoadCar;
+    return veiculo->getVelocidade() > distanceRoadCar && veiculo->getVelocidade() <= distanceLeftRoadCar;
 }
 
 bool Simulacao::regraSegurancaLR(Veiculo *veiculo)
@@ -452,12 +452,12 @@ bool Simulacao::regraSegurancaLR(Veiculo *veiculo)
     else
     {
         int distBackCar = distancePreviousCar(veiculo, rigthRoad);
-        regraBackCar = distBackCar > previousCar->getVelocidade();
+        regraBackCar = distBackCar >= previousCar->getVelocidade();
     }
 
     int distNextCar = distanceNextCar(veiculo, rigthRoad);
 
-    return regraBackCar && distNextCar > veiculo->getVelocidade();
+    return regraBackCar && distNextCar >= veiculo->getVelocidade();
 }
 
 bool Simulacao::regraSegurancaRL(Veiculo *veiculo)
@@ -477,12 +477,12 @@ bool Simulacao::regraSegurancaRL(Veiculo *veiculo)
     else
     {
         int distBackCar = distancePreviousCar(veiculo, leftRoad);
-        regraBackCar = distBackCar > previousCar->getVelocidade();
+        regraBackCar = distBackCar >= previousCar->getVelocidade();
     }
 
     int distNextCar = distanceNextCar(veiculo, leftRoad);
 
-    return regraBackCar && distNextCar > veiculo->getVelocidade();
+    return regraBackCar && distNextCar >= veiculo->getVelocidade();
 }
 
 void Simulacao::checkQtdVeiculos() const
