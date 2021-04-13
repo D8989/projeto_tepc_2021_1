@@ -1,6 +1,8 @@
 #ifndef AUTOMATA_HPP
 #define AUTOMATA_HPP
 
+#include <ostream>
+
 #define OUT_BOUND -2
 #define EMPTY_CELL -1
 
@@ -17,7 +19,7 @@ public:
     Automata(unsigned int size, unsigned int qtd);
     ~Automata();
 
-    void print();
+    void print(std::ostream *out);
     int getCell(int, int);
     void setCell(int, int, int);
     void cleanAutomato();

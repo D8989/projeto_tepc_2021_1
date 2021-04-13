@@ -27,26 +27,26 @@ int Automata::pos(int x, int y)
     return x * sizeRoad + y;
 }
 
-void Automata::print()
+void Automata::print(std::ostream *out)
 {
     for (size_t i = 0; i < qtdRoad; i++)
     {
-        std::cout << "fixa(" << i << ")\t";
+        *out << "faixa(" << i << ")\t";
         for (size_t j = 0; j < sizeRoad; j++)
         {
             int cell = getCell(i, j);
             if (cell == EMPTY_CELL)
             {
-                std::cout << "-";
+                *out << "-";
             }
             else
             {
-                std::cout << cell;
+                *out << cell;
             }
         }
-        std::cout << std::endl;
+        *out << std::endl;
     }
-    std::cout << std::endl;
+    *out << std::endl;
 }
 
 int Automata::getCell(int i, int j)

@@ -24,9 +24,9 @@ void Veiculo::setVelocidade(int vel)
     this->velocidade = vel < 0 ? 0 : vel;
 }
 
-void Veiculo::print()
+void Veiculo::print(std::ostream *out)
 {
-    std::cout << "Veiculo " << this->ID << "; V = " << this->velocidade << "; P(" << road << ", " << posRoad << ")" << std::endl;
+    *out << "Veiculo " << this->ID << "; V = " << this->velocidade << "; P(" << road << ", " << posRoad << ")" << std::endl;
 }
 
 int Veiculo::getRoad()

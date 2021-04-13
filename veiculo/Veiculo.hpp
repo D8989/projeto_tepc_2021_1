@@ -1,6 +1,8 @@
 #ifndef VEICULO_HPP
 #define VEICULO_HPP
 
+#include <ostream>
+
 class Veiculo
 {
 private:
@@ -15,7 +17,7 @@ public:
     unsigned int getId();
     int getVelocidade();
     void setVelocidade(int);
-    void print();
+    void print(std::ostream *out);
     int getRoad();
     int getPosRoad();
     void setPos(int road, int posRoad);
