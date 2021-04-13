@@ -9,9 +9,10 @@ private:
     unsigned int ID;
     int velocidade;
     int road, posRoad; // posicao do ve'iculo na malha
+    const int tamanho;
 
 public:
-    Veiculo(int, int);
+    Veiculo(int id, int vel, int tam = 1);
     ~Veiculo();
 
     unsigned int getId();
@@ -20,6 +21,7 @@ public:
     void print(std::ostream *out);
     int getRoad();
     int getPosRoad();
+    int getTamanho();
     void setPos(int road, int posRoad);
 };
 

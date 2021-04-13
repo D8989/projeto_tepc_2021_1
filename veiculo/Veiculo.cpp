@@ -1,7 +1,7 @@
 #include "Veiculo.hpp"
 #include <iostream>
 
-Veiculo::Veiculo(int id, int vel) : ID(id), velocidade(vel)
+Veiculo::Veiculo(int id, int vel, int tam) : ID(id), velocidade(vel), tamanho(tam)
 {
 }
 
@@ -43,4 +43,9 @@ void Veiculo::setPos(int road, int posRoad)
 {
     this->road = road;
     this->posRoad = posRoad;
+}
+
+int Veiculo::getTamanho()
+{
+    return this->tamanho;
 }
