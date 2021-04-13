@@ -30,14 +30,19 @@ private:
     double myRandom();
     void copyAtualToAnterior();
     Veiculo *getNextCar(Veiculo *) const;
-    Veiculo *getPreviousCar(Veiculo *) const;
+    Veiculo *getPreviousCar(Veiculo *, int) const;
     int distanceNextCar(Veiculo *, int) const;
+    int distancePreviousCar(Veiculo *, int) const;
     void runWithPrint(int qtdPassos, std::ostream *out);
     void runWithoutPrint(int qtdPassos);
     int getVeiculoSideRoad(int roadAtual, Direcao dir);
     bool regraModifacaoLR(Veiculo *veiculo);
     bool regraModifacaoRL(Veiculo *veiculo);
     bool regraModifacao(int veicId, Direcao dir);
+    bool regraSegurancaLR(Veiculo *veiculo);
+    bool regraSegurancaRL(Veiculo *veiculo);
+
+    void checkQtdVeiculos() const;
 
 public:
     Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax);
@@ -47,7 +52,7 @@ public:
     void passoPosicao();
     void run(int qtdPassos);
 
-    void print();
+    void print(std::ostream *out) const;
     void printPasso(std::ostream *out);
     void setFile(Arquivo *file);
 

@@ -105,9 +105,9 @@ Veiculo *Simulacao::getNextCar(Veiculo *v) const
     return veiculos[nextCarId];
 }
 
-Veiculo *Simulacao::getPreviousCar(Veiculo *car) const
+Veiculo *Simulacao::getPreviousCar(Veiculo *car, int road) const
 {
-    int x = car->getRoad();
+    int x = road;
     int y = car->getPosRoad();
     bool foundPreviousCar = false;
     int count = 0;
@@ -156,6 +156,37 @@ int Simulacao::distanceNextCar(Veiculo *v, int road) const
                 this->~Simulacao();
                 exit(EXIT_FAILURE);
             }
+            nextCarFounded = true;
+        }
+        if (count >= sizeRoad)
+        {
+            std::cout << "ERROR::SIMULACAO::distanceNextCar::NAO_ACHOU NENHUM CARRO\n";
+            this->~Simulacao();
+            exit(EXIT_FAILURE);
+        }
+    }
+
+    return count;
+}
+
+int Simulacao::distancePreviousCar(Veiculo *v, int road) const
+{
+    int x = road;
+    int y = v->getPosRoad();
+    bool nextCarFounded = false;
+    int count = 0;
+
+    while (!(count == this->velocityMax + 1) && !nextCarFounded)
+    {
+        y--;
+        count++;
+        if (y < 0)
+        { // road circular
+            y = sizeRoad - 1;
+        }
+        int cell = estadoAnterior->getCell(x, y);
+        if (cell != EMPTY_CELL)
+        {
             nextCarFounded = true;
         }
         if (count >= sizeRoad)
@@ -220,6 +251,7 @@ void Simulacao::passoPosicao()
         if (estadoAtual->getCell(road, novaPosRoad) != EMPTY_CELL)
         {
             std::cout << "ERROR::SIMULACAO::passoPosicao::Celula (" << road << ", " << novaPosRoad << ") está ocupada com o carro " << estadoAtual->getCell(road, novaPosRoad) << "; não está livre para colocar o carro " << veiculos[i]->getId() << std::endl;
+            print(file->getStream());
             this->~Simulacao();
             exit(EXIT_FAILURE);
         }
@@ -244,9 +276,11 @@ void Simulacao::runWithPrint(int qtdPassos, std::ostream *out)
 {
     for (size_t i = 0; i < qtdPassos; i++)
     {
+        checkQtdVeiculos(); // Check para ver se algum veículo se perdeu
         printPasso(out);
-        passoVelocidade();
         changeRoad();
+        copyAtualToAnterior();
+        passoVelocidade();
         passoPosicao();
         copyAtualToAnterior();
     }
@@ -262,19 +296,19 @@ void Simulacao::runWithoutPrint(int qtdPassos)
     }
 }
 
-void Simulacao::print()
+void Simulacao::print(std::ostream *out) const
 {
-    std::cout << "ATUAL:" << std::endl;
-    estadoAtual->print();
-    std::cout << std::endl;
-    std::cout << "ANTERIOR:" << std::endl;
-    estadoAnterior->print();
-    std::cout << std::endl;
+    *out << "ATUAL:" << std::endl;
+    estadoAtual->print(out);
+    *out << std::endl;
+    *out << "ANTERIOR:" << std::endl;
+    estadoAnterior->print(out);
+    *out << std::endl;
 
-    std::cout << "VEICULOS:\n";
+    *out << "VEICULOS:\n";
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
-        veiculos[i]->print();
+        veiculos[i]->print(out);
     }
 }
 
@@ -292,6 +326,7 @@ void Simulacao::printPasso(std::ostream *out)
             }
             else
             {
+                // *out << "[" << veiculos[veicId]->getId() << "]" << "(" << veiculos[veicId]->getVelocidade() << ")";
                 *out << veiculos[veicId]->getVelocidade();
             }
         }
@@ -307,16 +342,18 @@ void Simulacao::setFile(Arquivo *file)
 
 void Simulacao::changeRoad()
 {
+    estadoAtual->cleanAutomato();
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
-        if (regraModifacaoRL(veiculos[i]) /* && regraSegurancaRL(veiculos[i]) */)
+        if (regraModifacaoRL(veiculos[i]) && regraSegurancaRL(veiculos[i]))
         {
-            // mudar pista do veículo para esquerda
+            veiculos[i]->setPos(veiculos[i]->getRoad() - 1, veiculos[i]->getPosRoad());
         }
-        else if (regraModifacaoLR(veiculos[i]) /* && regraSegurancaRL(veiculos[i]) */)
+        else if (regraModifacaoLR(veiculos[i]) && regraSegurancaLR(veiculos[i]))
         {
-            // mudar pista do veículo para direita
+            veiculos[i]->setPos(veiculos[i]->getRoad() + 1, veiculos[i]->getPosRoad());
         }
+        estadoAtual->setCell(veiculos[i]->getRoad(), veiculos[i]->getPosRoad(), veiculos[i]->getId());
     }
 }
 
@@ -325,13 +362,13 @@ int Simulacao::getVeiculoSideRoad(int roadAtual, Direcao dir)
     int sideRoad;
     if (dir == Direcao::left_to_rigth)
     {
-        sideRoad = roadAtual - 1;
-        return sideRoad >= 0 ? sideRoad : OUT_BOUND;
+        sideRoad = roadAtual + 1;
+        return sideRoad < qtdRoad ? sideRoad : OUT_BOUND;
     }
     else if (dir == Direcao::rigth_to_left)
     {
-        sideRoad = roadAtual + 1;
-        return sideRoad < qtdRoad ? sizeRoad : OUT_BOUND;
+        sideRoad = roadAtual - 1;
+        return sideRoad >= 0 ? sideRoad : OUT_BOUND;
     }
     else
     {
@@ -361,21 +398,27 @@ bool Simulacao::regraModifacao(int veicId, Direcao dir)
 
 bool Simulacao::regraModifacaoLR(Veiculo *veiculo) // pista rapida para pista normal
 {
+    bool rulePrevious;
     int rigthRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::left_to_rigth);
     if (rigthRoad == OUT_BOUND || estadoAnterior->getCell(rigthRoad, veiculo->getPosRoad()) != EMPTY_CELL)
     {
         return false;
     }
 
-    Veiculo *previousCar = getPreviousCar(veiculo);
+    Veiculo *previousCar = getPreviousCar(veiculo, veiculo->getRoad());
     if (!previousCar)
     {
-        return false;
+        rulePrevious = false;
+    }
+    else
+    {
+        int distancePrevious = distanceNextCar(previousCar, previousCar->getRoad());
+        rulePrevious = previousCar->getVelocidade() > veiculo->getVelocidade() && distancePrevious < previousCar->getVelocidade();
     }
 
-    int distancePrevious = distanceNextCar(previousCar, previousCar->getRoad());
+    int distanceNext = distanceNextCar(veiculo, veiculo->getRoad());
 
-    return previousCar->getVelocidade() > veiculo->getVelocidade() && distancePrevious < previousCar->getVelocidade();
+    return rulePrevious || veiculo->getVelocidade() > distanceNext;
 }
 
 bool Simulacao::regraModifacaoRL(Veiculo *veiculo) // pista normal para pista rapida
@@ -390,4 +433,78 @@ bool Simulacao::regraModifacaoRL(Veiculo *veiculo) // pista normal para pista ra
     int distanceLeftRoadCar = distanceNextCar(veiculo, leftRoad);
 
     return veiculo->getVelocidade() > distanceRoadCar && veiculo->getVelocidade() < distanceLeftRoadCar;
+}
+
+bool Simulacao::regraSegurancaLR(Veiculo *veiculo)
+{
+    bool regraBackCar = false;
+    int rigthRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::left_to_rigth);
+    if (rigthRoad == OUT_BOUND || estadoAnterior->getCell(rigthRoad, veiculo->getPosRoad()) != EMPTY_CELL)
+    {
+        return false;
+    }
+
+    Veiculo *previousCar = getPreviousCar(veiculo, rigthRoad);
+    if (!previousCar)
+    {
+        regraBackCar = true;
+    }
+    else
+    {
+        int distBackCar = distancePreviousCar(veiculo, rigthRoad);
+        regraBackCar = distBackCar > previousCar->getVelocidade();
+    }
+
+    int distNextCar = distanceNextCar(veiculo, rigthRoad);
+
+    return regraBackCar && distNextCar > veiculo->getVelocidade();
+}
+
+bool Simulacao::regraSegurancaRL(Veiculo *veiculo)
+{
+    bool regraBackCar = false;
+    int leftRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::rigth_to_left);
+    if (leftRoad == OUT_BOUND || estadoAnterior->getCell(leftRoad, veiculo->getPosRoad()) != EMPTY_CELL)
+    {
+        return false;
+    }
+
+    Veiculo *previousCar = getPreviousCar(veiculo, leftRoad);
+    if (!previousCar)
+    {
+        regraBackCar = true;
+    }
+    else
+    {
+        int distBackCar = distancePreviousCar(veiculo, leftRoad);
+        regraBackCar = distBackCar > previousCar->getVelocidade();
+    }
+
+    int distNextCar = distanceNextCar(veiculo, leftRoad);
+
+    return regraBackCar && distNextCar > veiculo->getVelocidade();
+}
+
+void Simulacao::checkQtdVeiculos() const
+{
+    int count = 0;
+    for (size_t i = 0; i < qtdRoad; i++)
+    {
+        for (size_t j = 0; j < sizeRoad; j++)
+        {
+            int cell = estadoAnterior->getCell(i, j);
+            if (cell != EMPTY_CELL)
+            {
+                count++;
+            }
+        }
+    }
+
+    if (count != qtdVeiculos)
+    {
+        std::cout << "ERRO::SIMULACAL::checkQtdVeiculos::Algum veículo se perdeu";
+        file->write("ERRO::SIMULACAL::checkQtdVeiculos::Algum veículo se perdeu");
+        this->print(file->getStream());
+        this->~Simulacao();
+    }
 }
