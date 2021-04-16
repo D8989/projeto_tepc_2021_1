@@ -510,3 +510,11 @@ void Simulacao::checkQtdVeiculos() const
         this->~Simulacao();
     }
 }
+
+void Simulacao::printDados(std::ostream *out) const
+{
+    *out << "Quantidade de pistas: " << qtdRoad << std::endl;
+    *out << "comprimento das pistas: " << sizeRoad << std::endl;
+    *out << "Quantidade de veículos: " << qtdVeiculos << std::endl;
+    *out << "Velocidade Máxima: " << velocityMax << std::endl;
+}

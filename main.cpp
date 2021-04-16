@@ -22,11 +22,12 @@ int main(int argc, const char *argv[])
     int salvarEmArquivo = atoi(argv[6]);
 
     Simulacao s(comprimentoPista, qtdPistas, qtdCarros, velocidadeMax);
+    s.printDados(&std::cout);
     Arquivo *arq = new Arquivo();
 
     if (salvarEmArquivo)
     {
-        const char *param[] = {"ressult",argv[1],argv[2],argv[4],argv[5]};
+        const char *param[] = {"ressult", argv[1], argv[2], argv[4], argv[5]};
         std::string str = arq->montarNome(param, 5);
         arq->open(str.c_str());
         s.setFile(arq);

@@ -54,6 +54,7 @@ public:
 
     void print(std::ostream *out) const;
     void printPasso(std::ostream *out);
+    void printDados(std::ostream *out) const;
     void setFile(Arquivo *file);
 
     void changeRoad();
