@@ -113,7 +113,7 @@ Veiculo *Simulacao::getPreviousCar(Veiculo *car, int road) const
     int count = 0;
     int previousCarId = INVALID_INDEX;
 
-    while (!(count == this->velocityMax + 1) && !foundPreviousCar)
+    while (!(count == this->velocityMax) && !foundPreviousCar)
     {
         y--;
         count++;
@@ -139,7 +139,7 @@ int Simulacao::distanceNextCar(Veiculo *v, int road) const
     bool nextCarFounded = false;
     int count = 0;
 
-    while (!(count == this->velocityMax + 1) && !nextCarFounded)
+    while (!(count == this->velocityMax) && !nextCarFounded)
     {
         y++;
         count++;
@@ -165,7 +165,22 @@ int Simulacao::distanceNextCar(Veiculo *v, int road) const
         }
     }
 
-    return count - v->getTamanho();
+    // Caso do count parar "no meio" do veículo
+    if (estadoAnterior->isCellBodyCar(x, y))
+    {
+        while (estadoAnterior->isCellBodyCar(x, y))
+        {
+            y++;
+            if (y == sizeRoad)
+            { // road circular
+                y = 0;
+            }
+            count++;
+        }
+        nextCarFounded = true;
+    }
+
+    return nextCarFounded ? count - v->getTamanho() : count;
 }
 
 int Simulacao::distancePreviousCar(Veiculo *v, int road) const
@@ -175,7 +190,7 @@ int Simulacao::distancePreviousCar(Veiculo *v, int road) const
     bool nextCarFounded = false;
     int count = 0;
 
-    while (!(count == this->velocityMax + 1) && !nextCarFounded)
+    while (!(count == this->velocityMax) && !nextCarFounded)
     {
         y--;
         count++;
@@ -189,13 +204,13 @@ int Simulacao::distancePreviousCar(Veiculo *v, int road) const
         }
         if (count >= sizeRoad)
         {
-            std::cout << "ERROR::SIMULACAO::distanceNextCar::NAO_ACHOU NENHUM CARRO\n";
+            std::cout << "ERROR::SIMULACAO::distancePreviousCar::NAO_ACHOU NENHUM CARRO\n";
             this->~Simulacao();
             exit(EXIT_FAILURE);
         }
     }
 
-    return count - v->getTamanho();
+    return nextCarFounded ? count - v->getTamanho() : count;
 }
 
 void Simulacao::passoVelocidade()
@@ -210,7 +225,7 @@ void Simulacao::passoVelocidade()
         {
             novaVelocidade = carVelocidade + 1;
         }
-        else if (carVelocidade >= distNextCar)
+        else if (carVelocidade > distNextCar)
         {
             novaVelocidade = distNextCar;
         }
@@ -246,7 +261,7 @@ void Simulacao::passoPosicao()
             novaPosRoad = posRoad + velocidade;
         }
 
-        if (estadoAtual->getCell(road, novaPosRoad) != EMPTY_CELL)
+        if (!estadoAtual->isCarFit(road, novaPosRoad, veiculos[i]))
         {
             std::cout << "ERROR::SIMULACAO::passoPosicao::Celula (" << road << ", " << novaPosRoad << ") está ocupada com o carro " << estadoAtual->getCell(road, novaPosRoad) << "; não está livre para colocar o carro " << veiculos[i]->getId() << std::endl;
             print(file->getStream());
