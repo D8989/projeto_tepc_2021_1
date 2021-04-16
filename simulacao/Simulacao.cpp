@@ -10,16 +10,16 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax) : qt
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         int velRand = myRandom(1, vMax + 1);
-        this->veiculos[i] = new Veiculo(i, velRand);
+        this->veiculos[i] = new Veiculo(i, velRand, 2);
 
         bool veicSet = false;
         while (!veicSet)
         {
             int road = qtdRoads - 1;
             int posRoad = myRandom(0, sizeRoad);
-            if (estadoAtual->getCell(road, posRoad) == EMPTY_CELL)
+            if (estadoAtual->isCarFit(road, posRoad, veiculos[i]))
             {
-                estadoAtual->setCell(road, posRoad, veiculos[i]->getId());
+                estadoAtual->setCar(road, posRoad, veiculos[i]);
                 veiculos[i]->setPos(road, posRoad);
                 veicSet = true;
             }
@@ -62,7 +62,7 @@ void Simulacao::copyAtualToAnterior()
     {
         for (size_t j = 0; j < sizeRoad; j++)
         {
-            estadoAnterior->setCell(i, j, estadoAtual->getCell(i, j));
+            estadoAnterior->setValue(i, j, estadoAtual->getCell(i, j));
         }
     }
 }
@@ -84,7 +84,7 @@ Veiculo *Simulacao::getNextCar(Veiculo *v) const
             y = 0;
         }
         int veiculoIndex = estadoAnterior->getCell(x, y);
-        if (veiculoIndex != EMPTY_CELL)
+        if (estadoAnterior->isCellCar(veiculoIndex))
         {
             if (v->getId() == veiculos[veiculoIndex]->getId())
             {
@@ -123,7 +123,7 @@ Veiculo *Simulacao::getPreviousCar(Veiculo *car, int road) const
         }
 
         int veiculoIndex = estadoAnterior->getCell(x, y);
-        if (veiculoIndex != EMPTY_CELL)
+        if (estadoAnterior->isCellCar(veiculoIndex))
         {
             previousCarId = veiculoIndex;
             foundPreviousCar = true;
@@ -147,8 +147,7 @@ int Simulacao::distanceNextCar(Veiculo *v, int road) const
         { // road circular
             y = 0;
         }
-        int cell = estadoAnterior->getCell(x, y);
-        if (cell != EMPTY_CELL)
+        if (estadoAnterior->isCellCar(x, y))
         {
             if (count == sizeRoad)
             {
@@ -184,8 +183,7 @@ int Simulacao::distancePreviousCar(Veiculo *v, int road) const
         { // road circular
             y = sizeRoad - 1;
         }
-        int cell = estadoAnterior->getCell(x, y);
-        if (cell != EMPTY_CELL)
+        if (estadoAnterior->isCellCar(x, y))
         {
             nextCarFounded = true;
         }
@@ -255,7 +253,7 @@ void Simulacao::passoPosicao()
             this->~Simulacao();
             exit(EXIT_FAILURE);
         }
-        estadoAtual->setCell(road, novaPosRoad, veiculos[i]->getId());
+        estadoAtual->setCar(road, novaPosRoad, veiculos[i]);
         veiculos[i]->setPos(road, novaPosRoad);
     }
 }
@@ -319,15 +317,20 @@ void Simulacao::printPasso(std::ostream *out)
         *out << "[" << i << "]\t";
         for (size_t j = 0; j < sizeRoad; j++)
         {
-            int veicId = estadoAtual->getCell(i, j);
-            if (veicId == EMPTY_CELL)
+            int cell = estadoAtual->getCell(i, j);
+            switch (cell)
             {
+            case EMPTY_CELL:
                 *out << "-";
-            }
-            else
-            {
-                // *out << "[" << veiculos[veicId]->getId() << "]" << "(" << veiculos[veicId]->getVelocidade() << ")";
-                *out << veiculos[veicId]->getVelocidade();
+                break;
+
+            case BODY_CAR:
+                *out << "*";
+                break;
+
+            default:
+                *out << veiculos[cell]->getVelocidade();
+                break;
             }
         }
         *out << std::endl;
@@ -353,7 +356,7 @@ void Simulacao::changeRoad()
         {
             veiculos[i]->setPos(veiculos[i]->getRoad() + 1, veiculos[i]->getPosRoad());
         }
-        estadoAtual->setCell(veiculos[i]->getRoad(), veiculos[i]->getPosRoad(), veiculos[i]->getId());
+        estadoAtual->setCar(veiculos[i]->getRoad(), veiculos[i]->getPosRoad(), veiculos[i]);
     }
 }
 
@@ -400,7 +403,7 @@ bool Simulacao::regraModifacaoLR(Veiculo *veiculo) // pista rapida para pista no
 {
     bool rulePrevious;
     int rigthRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::left_to_rigth);
-    if (rigthRoad == OUT_BOUND || estadoAnterior->getCell(rigthRoad, veiculo->getPosRoad()) != EMPTY_CELL)
+    if (rigthRoad == OUT_BOUND || !estadoAnterior->isCarFit(rigthRoad, veiculo->getPosRoad(), veiculo))
     {
         return false;
     }
@@ -424,7 +427,7 @@ bool Simulacao::regraModifacaoLR(Veiculo *veiculo) // pista rapida para pista no
 bool Simulacao::regraModifacaoRL(Veiculo *veiculo) // pista normal para pista rapida
 {
     int leftRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::rigth_to_left);
-    if (leftRoad == OUT_BOUND || estadoAnterior->getCell(leftRoad, veiculo->getPosRoad()) != EMPTY_CELL)
+    if (leftRoad == OUT_BOUND || !estadoAnterior->isCarFit(leftRoad, veiculo->getPosRoad(), veiculo))
     {
         return false;
     }
@@ -439,7 +442,7 @@ bool Simulacao::regraSegurancaLR(Veiculo *veiculo)
 {
     bool regraBackCar = false;
     int rigthRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::left_to_rigth);
-    if (rigthRoad == OUT_BOUND || estadoAnterior->getCell(rigthRoad, veiculo->getPosRoad()) != EMPTY_CELL)
+    if (rigthRoad == OUT_BOUND || !estadoAnterior->isCarFit(rigthRoad, veiculo->getPosRoad(), veiculo))
     {
         return false;
     }
@@ -464,7 +467,7 @@ bool Simulacao::regraSegurancaRL(Veiculo *veiculo)
 {
     bool regraBackCar = false;
     int leftRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::rigth_to_left);
-    if (leftRoad == OUT_BOUND || estadoAnterior->getCell(leftRoad, veiculo->getPosRoad()) != EMPTY_CELL)
+    if (leftRoad == OUT_BOUND || !estadoAnterior->isCarFit(leftRoad, veiculo->getPosRoad(), veiculo))
     {
         return false;
     }
@@ -492,8 +495,7 @@ void Simulacao::checkQtdVeiculos() const
     {
         for (size_t j = 0; j < sizeRoad; j++)
         {
-            int cell = estadoAnterior->getCell(i, j);
-            if (cell != EMPTY_CELL)
+            if (estadoAnterior->isCellCar(i, j))
             {
                 count++;
             }
@@ -502,8 +504,8 @@ void Simulacao::checkQtdVeiculos() const
 
     if (count != qtdVeiculos)
     {
-        std::cout << "ERRO::SIMULACAL::checkQtdVeiculos::Algum veículo se perdeu";
-        file->write("ERRO::SIMULACAL::checkQtdVeiculos::Algum veículo se perdeu");
+        std::cout << "ERRO::SIMULACAL::checkQtdVeiculos::Algum veículo se perdeu\n";
+        file->write("ERRO::SIMULACAL::checkQtdVeiculos::Algum veículo se perdeu\n");
         this->print(file->getStream());
         this->~Simulacao();
     }
