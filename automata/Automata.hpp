@@ -25,8 +25,10 @@ public:
     void setCar(int, int, Veiculo *carro);
     void setValue(int, int, int);
     bool isCarFit(int, int, Veiculo *carro);
-    bool isCellCar(int, int); // coordenada da malha
-    bool isCellCar(int);      // valor da celula
+    bool isCellCar(int, int);     // coordenada da malha
+    bool isCellCar(int);          // valor da celula
+    bool isCellBodyCar(int, int); // coordenada da malha
+    bool isCellBodyCar(int);      // valor da celula
     void cleanAutomato();
 };
 

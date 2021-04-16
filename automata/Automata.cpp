@@ -104,6 +104,16 @@ bool Automata::isCellCar(int cell)
     return !(cell == EMPTY_CELL || cell == BODY_CAR);
 }
 
+bool Automata::isCellBodyCar(int i, int j)
+{
+    return this->getCell(i, j) == BODY_CAR;
+}
+
+bool Automata::isCellBodyCar(int cell)
+{
+    return cell == BODY_CAR;
+}
+
 void Automata::setValue(int i, int j, int value)
 {
     this->automato[pos(i, j)] = value;
