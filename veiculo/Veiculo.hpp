@@ -3,6 +3,8 @@
 
 #include <ostream>
 
+#define BODY_CAR -4
+
 class Veiculo
 {
 private:
