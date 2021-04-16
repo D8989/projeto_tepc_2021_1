@@ -2,7 +2,7 @@
 #include <stdlib.h>
 #include <iostream>
 
-Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax) : qtdRoad(qtdRoads), sizeRoad(sizeRoad), qtdVeiculos(qtdVeiculos), velocityMax(vMax)
+Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int sizeVeiculo) : qtdRoad(qtdRoads), sizeRoad(sizeRoad), qtdVeiculos(qtdVeiculos), velocityMax(vMax)
 {
     this->file = NULL;
     this->estadoAtual = new Automata(sizeRoad, qtdRoads);
@@ -10,7 +10,7 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax) : qt
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         int velRand = myRandom(1, vMax + 1);
-        this->veiculos[i] = new Veiculo(i, velRand, 2);
+        this->veiculos[i] = new Veiculo(i, velRand, sizeVeiculo);
 
         bool veicSet = false;
         while (!veicSet)

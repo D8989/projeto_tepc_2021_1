@@ -45,7 +45,7 @@ private:
     void checkQtdVeiculos() const;
 
 public:
-    Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax);
+    Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int sizeVeiculo);
     ~Simulacao();
 
     void passoVelocidade();
