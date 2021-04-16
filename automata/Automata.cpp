@@ -77,7 +77,6 @@ void Automata::setCar(int i, int j, Veiculo *carro)
 
 bool Automata::isCarFit(int i, int j, Veiculo *carro)
 {
-    int cell = this->getCell(i, j);
     int k = j;
     for (size_t count = 0; count < carro->getTamanho(); count++)
     {
