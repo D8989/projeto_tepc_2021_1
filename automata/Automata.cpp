@@ -35,13 +35,19 @@ void Automata::print(std::ostream *out)
         for (size_t j = 0; j < sizeRoad; j++)
         {
             int cell = getCell(i, j);
-            if (cell == EMPTY_CELL)
+            switch (cell)
             {
+            case EMPTY_CELL:
                 *out << "-";
-            }
-            else
-            {
+                break;
+
+            case BODY_CAR:
+                *out << "*";
+                break;
+
+            default:
                 *out << cell;
+                break;
             }
         }
         *out << std::endl;
@@ -54,9 +60,54 @@ int Automata::getCell(int i, int j)
     return this->automato[pos(i, j)];
 }
 
-void Automata::setCell(int i, int j, int carIndex)
+void Automata::setCar(int i, int j, Veiculo *carro)
 {
-    this->automato[pos(i, j)] = carIndex;
+    this->setValue(i, j, carro->getId());
+    int carPartIndex = j;
+    for (size_t k = 1; k < carro->getTamanho(); k++)
+    {
+        carPartIndex--;
+        if (carPartIndex < 0)
+        {
+            carPartIndex = sizeRoad - 1;
+        }
+        this->setValue(i, carPartIndex, BODY_CAR);
+    }
+}
+
+bool Automata::isCarFit(int i, int j, Veiculo *carro)
+{
+    int cell = this->getCell(i, j);
+    int k = j;
+    for (size_t count = 0; count < carro->getTamanho(); count++)
+    {
+        if (k < 0)
+        {
+            k = this->sizeRoad - 1;
+        }
+        if (this->getCell(i, k) != EMPTY_CELL)
+        {
+            return false;
+        }
+        k--;
+    }
+    return true;
+}
+
+bool Automata::isCellCar(int i, int j)
+{
+    int cell = this->getCell(i, j);
+    return !(cell == EMPTY_CELL || cell == BODY_CAR);
+}
+
+bool Automata::isCellCar(int cell)
+{
+    return !(cell == EMPTY_CELL || cell == BODY_CAR);
+}
+
+void Automata::setValue(int i, int j, int value)
+{
+    this->automato[pos(i, j)] = value;
 }
 
 void Automata::cleanAutomato()
