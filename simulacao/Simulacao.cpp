@@ -308,7 +308,7 @@ void Simulacao::passoVelocidade()
 
 void Simulacao::passoPosicao()
 {
-    estadoAtual->cleanAutomato();
+    estadoAtual->cleanAutomato(EMPTY_CELL);
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         int road = veiculos[i]->getRoad();
@@ -424,7 +424,7 @@ void Simulacao::setFile(Arquivo *file)
 
 void Simulacao::changeRoad()
 {
-    estadoAtual->cleanAutomato();
+    estadoAtual->cleanAutomato(EMPTY_CELL);
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         if (regraModifacaoRL(veiculos[i]) && regraSegurancaRL(veiculos[i]))

@@ -29,7 +29,7 @@ public:
     bool isCellCar(int);          // valor da celula
     bool isCellBodyCar(int, int); // coordenada da malha
     bool isCellBodyCar(int);      // valor da celula
-    void cleanAutomato();
+    void cleanAutomato(int value);
 };
 
 #endif

@@ -119,7 +119,7 @@ void Automata::setValue(int i, int j, int value)
     this->automato[pos(i, j)] = value;
 }
 
-void Automata::cleanAutomato()
+void Automata::cleanAutomato(int value)
 {
-    memset(automato, -0x1, this->sizeRoad * this->qtdRoad * sizeof(int));
+    memset(automato, value, this->sizeRoad * this->qtdRoad * sizeof(int));
 }
