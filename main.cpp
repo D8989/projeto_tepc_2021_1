@@ -11,18 +11,18 @@ int main(int argc, const char *argv[])
 
     if (argc != 8)
     {
-        std::cout << "Deve-se passar 6 parametros inteiros: qtd_passos tamanho_pista qtd_pista qtd_carros vel_max tamanho_veiculos salvar_Arquivo\n";
+        std::cout << "Deve-se passar 6 parametros inteiros: qtd_passos tamanho_pista qtd_estacoes qtd_carros vel_max tamanho_veiculos salvar_Arquivo\n";
         exit(EXIT_FAILURE);
     }
     int qtdPassos = atoi(argv[1]);
     int comprimentoPista = atoi(argv[2]);
-    int qtdPistas = atoi(argv[3]);
+    int qtdEstacoes = atoi(argv[3]);
     int qtdCarros = atoi(argv[4]);
     int velocidadeMax = atoi(argv[5]);
     int tamanhoVeiculo = atoi(argv[6]);
     int salvarEmArquivo = atoi(argv[7]);
 
-    Simulacao s(comprimentoPista, qtdPistas, qtdCarros, velocidadeMax, tamanhoVeiculo);
+    Simulacao s(comprimentoPista, 2, qtdCarros, velocidadeMax, tamanhoVeiculo, qtdEstacoes);
     s.printDados(&std::cout);
     Arquivo *arq = new Arquivo();
 
