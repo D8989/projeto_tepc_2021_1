@@ -9,8 +9,10 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
     this->estadoAtual = new Automata(sizeRoad, qtdRoads);
 
     this->totalEstacoes = qtdEstacoes;
+    int *estacoesIDs = NULL;
     if (qtdEstacoes > 0)
     {
+        estacoesIDs = new int[qtdEstacoes];
         int sizeEstacao = sizeVeiculo;
         int laneSize = sizeVeiculo;
         int sizeTotalEstacao = sizeEstacao + laneSize * 2;
@@ -34,7 +36,33 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         int velRand = myRandom(1, vMax + 1);
-        this->veiculos[i] = new Veiculo(i, velRand, sizeVeiculo);
+        int qtdEstAux = 0;
+        if (estacoesIDs != NULL)
+        {
+            if (i % 2 == 0)
+            {
+                for (int j = 0; j < qtdEstacoes; j++)
+                {
+                    qtdEstAux++;
+                    estacoesIDs[j] = j;
+                }
+            } else {
+                int e = 0;
+                int j = 0;
+                while (e < qtdEstacoes)
+                {
+                    if (e % 2 != 0) {
+                        qtdEstAux++;
+                        estacoesIDs[j] = e;
+                        j++;
+                    }
+                    e++;
+                }
+            }
+            this->veiculos[i] = new Veiculo(i, velRand, sizeVeiculo, qtdEstAux, estacoesIDs);
+        } else {
+            this->veiculos[i] = new Veiculo(i, velRand, sizeVeiculo);
+        }
 
         bool veicSet = false;
         while (!veicSet)
@@ -48,6 +76,10 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
                 veicSet = true;
             }
         }
+    }
+
+    if (estacoesIDs != NULL) {
+        delete estacoesIDs;
     }
 
     this->estadoAnterior = new Automata(sizeRoad, qtdRoads);
