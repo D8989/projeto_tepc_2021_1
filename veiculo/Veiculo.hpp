@@ -12,9 +12,12 @@ private:
     int velocidade;
     int road, posRoad; // posicao do ve'iculo na malha
     const int tamanho;
+    int *estacoesId = NULL;
+    int qtdEstacoes;
+    int estacaoAtualId;
 
 public:
-    Veiculo(int id, int vel, int tam = 1);
+    Veiculo(int id, int vel, int tam = 1, int qtdEstacoes = 0, int *estacoesIds = NULL);
     ~Veiculo();
 
     unsigned int getId();

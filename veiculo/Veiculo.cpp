@@ -1,12 +1,27 @@
 #include "Veiculo.hpp"
 #include <iostream>
 
-Veiculo::Veiculo(int id, int vel, int tam) : ID(id), velocidade(vel), tamanho(tam)
+Veiculo::Veiculo(int id, int vel, int tam, int qtdEstacoes, int *estacoesIds) : ID(id), velocidade(vel), tamanho(tam)
 {
+    if (qtdEstacoes > 0)
+    {
+        this->qtdEstacoes = qtdEstacoes;
+        this->estacoesId = new int[qtdEstacoes];
+        this->estacaoAtualId = 0;
+
+        for (int i = 0; i < qtdEstacoes; i++)
+        {
+            this->estacoesId[i] = estacoesIds[i];
+        }
+    }
 }
 
 Veiculo::~Veiculo()
 {
+    if (this->estacoesId)
+    {
+        delete this->estacoesId;
+    }
 }
 
 unsigned int Veiculo::getId()
