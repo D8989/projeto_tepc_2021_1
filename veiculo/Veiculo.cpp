@@ -41,7 +41,26 @@ void Veiculo::setVelocidade(int vel)
 
 void Veiculo::print(std::ostream *out)
 {
-    *out << "Veiculo " << this->ID << "; V = " << this->velocidade << "; P(" << road << ", " << posRoad << ")" << std::endl;
+    *out << "Veiculo " << this->ID << "; V = " << this->velocidade << "; P(" << road << ", " << posRoad << ")";
+
+    if (qtdEstacoes > 0)
+    {
+        *out << ": stations " << qtdEstacoes << " [";
+        for (size_t i = 0; i < qtdEstacoes; i++)
+        {
+            *out << this->estacoesId[i];
+            if (i == qtdEstacoes - 1)
+            {
+                *out << "]";
+            }
+            else
+            {
+                *out << ", ";
+            }
+        }
+    }
+
+    *out << std::endl;
 }
 
 int Veiculo::getRoad()
