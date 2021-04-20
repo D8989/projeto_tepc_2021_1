@@ -17,10 +17,11 @@ enum Direcao
 class Simulacao
 {
 private:
-    Automata *estadoAtual;
-    Automata *estadoAnterior;
-    Veiculo **veiculos;
-    Arquivo *file;
+    Automata *estadoAtual = NULL;
+    Automata *estadoAnterior = NULL;
+    Veiculo **veiculos = NULL;
+    Estacao **estacoes = NULL;
+    Arquivo *file = NULL;
     int velocityMax;
     int qtdRoad;
     int sizeRoad;
