@@ -1,11 +1,35 @@
 #include "Simulacao.hpp"
 #include <stdlib.h>
 #include <iostream>
+#include <cmath>
 
-Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int sizeVeiculo) : qtdRoad(qtdRoads), sizeRoad(sizeRoad), qtdVeiculos(qtdVeiculos), velocityMax(vMax)
+Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int sizeVeiculo, int qtdEstacoes) : qtdRoad(qtdRoads), sizeRoad(sizeRoad), qtdVeiculos(qtdVeiculos), velocityMax(vMax)
 {
     this->file = NULL;
     this->estadoAtual = new Automata(sizeRoad, qtdRoads);
+
+    this->totalEstacoes = qtdEstacoes;
+    if (qtdEstacoes > 0)
+    {
+        int sizeEstacao = sizeVeiculo;
+        int laneSize = sizeVeiculo;
+        int sizeTotalEstacao = sizeEstacao + laneSize * 2;
+        int espaco = (int)floor((double)sizeRoad / qtdEstacoes);
+        if (espaco <= sizeTotalEstacao)
+        {
+            std::cerr << "ERROR::SIMULACAO::Simulacao::A pista é pequena para essa quantidade de estação\n";
+            exit(EXIT_FAILURE);
+        }
+
+        this->estacoes = new Estacao *[qtdEstacoes];
+        for (int i = 0; i < qtdEstacoes; i++)
+        {
+            int posRoadEstacao = (i * espaco) + laneSize + sizeEstacao;
+            std::cout << "ESTACAO " << i << " está em " << posRoadEstacao << std::endl;
+            this->estacoes[i] = new Estacao(i, posRoadEstacao, sizeEstacao, laneSize, 5);
+        }
+    }
+
     this->veiculos = (Veiculo **)malloc(sizeof(Veiculo *) * qtdVeiculos);
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
@@ -35,11 +59,19 @@ Simulacao::~Simulacao()
     delete estadoAtual;
     delete estadoAnterior;
 
+    if (this->estacoes != NULL)
+    {
+        for (size_t i = 0; i < totalEstacoes; i++)
+        {
+            delete this->estacoes[i];
+        }
+        delete this->estacoes;
+    }
+
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         delete this->veiculos[i];
     }
-
     free(this->veiculos);
 }
 

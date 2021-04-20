@@ -4,6 +4,7 @@
 #include "../automata/Automata.hpp"
 #include "../veiculo/Veiculo.hpp"
 #include "../arquivo/Arquivo.hpp"
+#include "../estacao/Estacao.hpp"
 #include <ostream>
 
 #define INVALID_INDEX -3
@@ -26,6 +27,7 @@ private:
     int qtdRoad;
     int sizeRoad;
     int qtdVeiculos;
+    int totalEstacoes;
 
     int myRandom(int, int);
     double myRandom();
@@ -46,7 +48,7 @@ private:
     void checkQtdVeiculos() const;
 
 public:
-    Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int sizeVeiculo);
+    Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int sizeVeiculo, int qtdEstacoes = 0);
     ~Simulacao();
 
     void passoVelocidade();
