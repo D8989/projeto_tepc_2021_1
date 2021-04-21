@@ -22,6 +22,9 @@ public:
     ~Estacao();
 
     int getId();
+    int getTamanhoTotal();
+    int getPosRoad();
+    int getBeginStation(int limite);
     void setCar();
     void removeCar();
     bool isCarInStation();

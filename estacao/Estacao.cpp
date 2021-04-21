@@ -15,6 +15,32 @@ int Estacao::getId()
     return this->ID;
 }
 
+int Estacao::getTamanhoTotal()
+{
+    return this->stopLaneSize * 2 + this->size;
+}
+
+int Estacao::getPosRoad()
+{
+    return this->posRoad;
+}
+
+int Estacao::getBeginStation(int limite)
+{
+    int count = 0;
+    int beginStation = posRoad;
+    while (count < size + stopLaneSize)
+    {
+        beginStation--;
+        if (beginStation < 0)
+        {
+            beginStation = limite - 1;
+        }
+        count++;
+    }
+    return beginStation;
+}
+
 void Estacao::setCar()
 {
     this->hasCar = true;
