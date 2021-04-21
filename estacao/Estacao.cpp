@@ -102,3 +102,13 @@ void Estacao::print()
 {
     std::cout << "ID: " << ID << "PosRoad: " << posRoad << std::endl;
 }
+
+bool Estacao::isCarInStopLineIn(int posCar, int limite)
+{
+    return posCar > getBeginStation(limite) && posCar < getStartStation(limite);
+}
+
+bool Estacao::isCarInStopLineOut(int posCar, int limite)
+{
+    return posCar > this->posRoad && posCar < this->posRoad + this->stopLaneSize;
+}

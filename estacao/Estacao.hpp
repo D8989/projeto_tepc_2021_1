@@ -33,6 +33,9 @@ public:
     bool isCarInStation();
     bool isTimeOut();
 
+    bool isCarInStopLineIn(int posCar, int limite);
+    bool isCarInStopLineOut(int posCar, int limite);
+
     void print();
 };
 
