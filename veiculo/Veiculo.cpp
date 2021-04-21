@@ -83,3 +83,8 @@ int Veiculo::getTamanho()
 {
     return this->tamanho;
 }
+
+int Veiculo::getNextStationID()
+{
+    return estacoesId[estacaoAtualId];
+}

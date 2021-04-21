@@ -28,6 +28,8 @@ public:
     int getPosRoad();
     int getTamanho();
     void setPos(int road, int posRoad);
+
+    int getNextStationID();
 };
 
 #endif
