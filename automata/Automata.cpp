@@ -44,6 +44,10 @@ void Automata::print(std::ostream *out)
             case BODY_CAR:
                 *out << "*";
                 break;
+            
+            case OUT_BOUND:
+                *out << " ";
+                break;
 
             default:
                 *out << cell;
@@ -96,12 +100,12 @@ bool Automata::isCarFit(int i, int j, Veiculo *carro)
 bool Automata::isCellCar(int i, int j)
 {
     int cell = this->getCell(i, j);
-    return !(cell == EMPTY_CELL || cell == BODY_CAR);
+    return !(cell == EMPTY_CELL || cell == BODY_CAR || cell == OUT_BOUND);
 }
 
 bool Automata::isCellCar(int cell)
 {
-    return !(cell == EMPTY_CELL || cell == BODY_CAR);
+    return !(cell == EMPTY_CELL || cell == BODY_CAR || cell == OUT_BOUND);
 }
 
 bool Automata::isCellBodyCar(int i, int j)
@@ -114,6 +118,11 @@ bool Automata::isCellBodyCar(int cell)
     return cell == BODY_CAR;
 }
 
+bool Automata::isCellOutBound(int i, int j)
+{
+    return this->getCell(i, j) == OUT_BOUND;
+}
+
 void Automata::setValue(int i, int j, int value)
 {
     this->automato[pos(i, j)] = value;
@@ -122,4 +131,27 @@ void Automata::setValue(int i, int j, int value)
 void Automata::cleanAutomato(int value)
 {
     memset(automato, value, this->sizeRoad * this->qtdRoad * sizeof(int));
+}
+
+void Automata::cleanAutomato(int x, int value)
+{
+    for (size_t y = 0; y < sizeRoad; y++)
+    {
+        this->setValue(x, y, value);
+    }
+    
+}
+
+void Automata::cleanCars()
+{
+    for (size_t x = 0; x < qtdRoad; x++)
+    {
+        for (size_t y = 0; y < sizeRoad; y++)
+        {
+            if (!this->isCellOutBound(x, y))
+            {
+                this->setValue(x, y, EMPTY_CELL);
+            }
+        }
+    }
 }
