@@ -38,6 +38,8 @@ private:
     Veiculo *getPreviousCar(Veiculo *, int) const;
     int distanceNextCar(Veiculo *, int) const;
     int distancePreviousCar(Veiculo *, int) const;
+    int distanceNextStation(Veiculo *car) const;
+    int distanceNextObstacle(Veiculo *car) const;
     void runWithPrint(int qtdPassos, std::ostream *out);
     void runWithoutPrint(int qtdPassos);
     int getVeiculoSideRoad(int roadAtual, Direcao dir);
@@ -49,6 +51,8 @@ private:
 
     void checkQtdVeiculos() const;
     void printEstacoesPasso(std::ostream *out) const;
+
+    int getNextStationID(Veiculo *veiculo) const;
 
 public:
     Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int sizeVeiculo, int qtdEstacoes = 0);

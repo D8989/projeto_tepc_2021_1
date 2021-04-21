@@ -16,7 +16,7 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
         estacoesIDs = new int[qtdEstacoes];
         int sizeEstacao = sizeVeiculo;
         int laneSize = sizeVeiculo;
-         // TODO (daniel) Melhorar essa conta
+        // TODO (daniel) Melhorar essa conta
         int sizeTotalEstacao = sizeEstacao + laneSize * 2;
         int espaco = (int)floor((double)sizeRoad / qtdEstacoes);
         if (espaco <= sizeTotalEstacao)
@@ -31,7 +31,7 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
             int posRoadEstacao = (i * espaco) + laneSize + sizeEstacao;
             std::cout << "ESTACAO " << i << " está em " << posRoadEstacao << std::endl;
             this->estacoes[i] = new Estacao(i, posRoadEstacao, sizeEstacao, laneSize, 5);
-            
+
             int count = 0;
             int stationBody = this->estacoes[i]->getBeginStation(sizeRoad);
 
@@ -44,7 +44,7 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
                     stationBody = 0;
                 }
                 count++;
-            } 
+            }
         }
     }
 
@@ -62,12 +62,15 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
                     qtdEstAux++;
                     estacoesIDs[j] = j;
                 }
-            } else {
+            }
+            else
+            {
                 int e = 0;
                 int j = 0;
                 while (e < qtdEstacoes)
                 {
-                    if (e % 2 != 0) {
+                    if (e % 2 != 0)
+                    {
                         qtdEstAux++;
                         estacoesIDs[j] = e;
                         j++;
@@ -76,7 +79,9 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
                 }
             }
             this->veiculos[i] = new Veiculo(i, velRand, sizeVeiculo, qtdEstAux, estacoesIDs);
-        } else {
+        }
+        else
+        {
             this->veiculos[i] = new Veiculo(i, velRand, sizeVeiculo);
         }
 
@@ -94,7 +99,8 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
         }
     }
 
-    if (estacoesIDs != NULL) {
+    if (estacoesIDs != NULL)
+    {
         delete estacoesIDs;
     }
 
@@ -263,6 +269,78 @@ int Simulacao::distanceNextCar(Veiculo *v, int road) const
     return nextCarFounded ? count - v->getTamanho() : count;
 }
 
+int Simulacao::distanceNextStation(Veiculo *car) const
+{
+    if (car->getRoad() == STOP_LANE)
+    {
+        return this->velocityMax;
+    }
+    int eId = car->getNextStationID();
+    int stationGhostWall = estacoes[eId]->getStartStation(sizeRoad);
+    int y = car->getPosRoad();
+    int count = 0;
+    bool stationFounded = false;
+    while (!(count == this->velocityMax) && !stationFounded)
+    {
+        y++;
+        count++;
+        if (y == sizeRoad)
+        {
+            y = 0;
+        }
+
+        if (y == stationGhostWall)
+        {
+            stationFounded = true;
+        }
+    }
+    return count - 1;
+}
+
+int Simulacao::distanceNextObstacle(Veiculo *car) const
+{
+    int eId = car->getNextStationID();
+    int stationGhostWall = estacoes[eId]->getStartStation(sizeRoad);
+    int x = car->getRoad();
+    int y = car->getPosRoad();
+    int count = 0;
+    bool obstacleFound = false;
+    while (!(count == this->velocityMax) && !obstacleFound)
+    {
+        y++;
+        count++;
+        if (y == sizeRoad)
+        {
+            y = 0;
+        }
+        if (estadoAnterior->isCellCar(x, y) || estadoAnterior->isCellOutBound(x, y) || (y == stationGhostWall && x == MAIN_LANE))
+        {
+            obstacleFound = true;
+        }
+    }
+
+    // Caso do count parar "no meio" do veículo
+    if (estadoAnterior->isCellBodyCar(x, y))
+    {
+        while (estadoAnterior->isCellBodyCar(x, y))
+        {
+            y++;
+            if (y == sizeRoad)
+            { // road circular
+                y = 0;
+            }
+            count++;
+        }
+        obstacleFound = true;
+    }
+
+    if (obstacleFound)
+    {
+        return estadoAnterior->isCellCar(x, y) ? count - car->getTamanho() : count - 1;
+    }
+    return count;
+}
+
 int Simulacao::distancePreviousCar(Veiculo *v, int road) const
 {
     int x = road;
@@ -298,16 +376,16 @@ void Simulacao::passoVelocidade()
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         int carVelocidade = veiculos[i]->getVelocidade();
-        int distNextCar = distanceNextCar(veiculos[i], veiculos[i]->getRoad());
+        int distance = distanceNextObstacle(veiculos[i]);
         int novaVelocidade = carVelocidade;
 
-        if (carVelocidade < velocityMax && distNextCar >= carVelocidade + 1)
+        if (carVelocidade < velocityMax && distance >= carVelocidade + 1)
         {
             novaVelocidade = carVelocidade + 1;
         }
-        else if (carVelocidade > distNextCar)
+        else if (carVelocidade > distance)
         {
-            novaVelocidade = distNextCar;
+            novaVelocidade = distance;
         }
 
         if (myRandom() < 0.25)
@@ -423,7 +501,7 @@ void Simulacao::printPasso(std::ostream *out)
             case BODY_CAR:
                 *out << "*";
                 break;
-            
+
             case OUT_BOUND:
                 *out << " ";
                 break;
@@ -457,7 +535,9 @@ void Simulacao::printEstacoesPasso(std::ostream *out) const
             }
             e++;
             count = i - 1;
-        } else {
+        }
+        else
+        {
             *out << " ";
         }
         count++;
@@ -526,46 +606,19 @@ bool Simulacao::regraModifacao(int veicId, Direcao dir)
     }
 }
 
-bool Simulacao::regraModifacaoLR(Veiculo *veiculo) // pista rapida para pista normal
+bool Simulacao::regraModifacaoLR(Veiculo *veiculo) // STOP_LANE to MAIN_LANE
 {
-    bool rulePrevious;
-    int rigthRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::left_to_rigth);
-    if (rigthRoad == OUT_BOUND || !estadoAnterior->isCarFit(rigthRoad, veiculo->getPosRoad(), veiculo))
-    {
-        return false;
-    }
-
-    Veiculo *previousCar = getPreviousCar(veiculo, veiculo->getRoad());
-    if (!previousCar)
-    {
-        rulePrevious = false;
-    }
-    else
-    {
-        int distancePrevious = distanceNextCar(previousCar, previousCar->getRoad());
-        rulePrevious = previousCar->getVelocidade() > veiculo->getVelocidade() && distancePrevious < previousCar->getVelocidade();
-    }
-
-    int distanceNext = distanceNextCar(veiculo, veiculo->getRoad());
-
-    return rulePrevious || veiculo->getVelocidade() > distanceNext;
+    int eId = veiculo->getNextStationID();
+    return estacoes[eId]->isCarInStopLineOut(veiculo->getPosRoad(), sizeRoad);
 }
 
-bool Simulacao::regraModifacaoRL(Veiculo *veiculo) // pista normal para pista rapida
+bool Simulacao::regraModifacaoRL(Veiculo *veiculo) // MAIN_LANE to STOP_LANE
 {
-    int leftRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::rigth_to_left);
-    if (leftRoad == OUT_BOUND || !estadoAnterior->isCarFit(leftRoad, veiculo->getPosRoad(), veiculo))
-    {
-        return false;
-    }
-
-    int distanceRoadCar = distanceNextCar(veiculo, veiculo->getRoad());
-    int distanceLeftRoadCar = distanceNextCar(veiculo, leftRoad);
-
-    return veiculo->getVelocidade() > distanceRoadCar && veiculo->getVelocidade() <= distanceLeftRoadCar;
+    int eId = veiculo->getNextStationID();
+    return estacoes[eId]->isCarInStopLineIn(veiculo->getPosRoad(), sizeRoad);
 }
 
-bool Simulacao::regraSegurancaLR(Veiculo *veiculo)
+bool Simulacao::regraSegurancaLR(Veiculo *veiculo) // STOP_LANE to MAIN_LANE
 {
     bool regraBackCar = false;
     int rigthRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::left_to_rigth);
