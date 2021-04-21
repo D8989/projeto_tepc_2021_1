@@ -1,3 +1,4 @@
+#include <iostream>
 #include "Estacao.hpp"
 
 Estacao::Estacao(int id, int posRoad, int size, int laneSize, int maxTime) : ID(id), posRoad(posRoad), size(size), stopLaneSize(laneSize), MaxTime(maxTime)
@@ -25,6 +26,16 @@ int Estacao::getPosRoad()
     return this->posRoad;
 }
 
+int Estacao::getSize()
+{
+    return this->size;
+}
+
+int Estacao::getStopLaneSize()
+{
+    return this->stopLaneSize;
+}
+
 int Estacao::getBeginStation(int limite)
 {
     int count = 0;
@@ -39,6 +50,22 @@ int Estacao::getBeginStation(int limite)
         count++;
     }
     return beginStation;
+}
+
+int Estacao::getStartStation(int limite)
+{
+    int count = 0;
+    int startStation = posRoad;
+    while (count < size)
+    {
+        startStation--;
+        if (startStation < 0)
+        {
+            startStation = limite - 1;
+        }
+        count++;
+    }
+    return startStation;
 }
 
 void Estacao::setCar()
@@ -69,4 +96,9 @@ void Estacao::addTime()
 void Estacao::resetTime()
 {
     this->countTime = 0;
+}
+
+void Estacao::print()
+{
+    std::cout << "ID: " << ID << "PosRoad: " << posRoad << std::endl;
 }

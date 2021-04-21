@@ -23,12 +23,17 @@ public:
 
     int getId();
     int getTamanhoTotal();
+    int getSize();
+    int getStopLaneSize();
     int getPosRoad();
-    int getBeginStation(int limite);
+    int getBeginStation(int limite); // size + stop lane
+    int getStartStation(int limite); // size
     void setCar();
     void removeCar();
     bool isCarInStation();
     bool isTimeOut();
+
+    void print();
 };
 
 #endif
