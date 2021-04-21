@@ -8,6 +8,8 @@
 #include <ostream>
 
 #define INVALID_INDEX -3
+#define MAIN_LANE 1
+#define STOP_LANE 0
 
 enum Direcao
 {
@@ -46,6 +48,7 @@ private:
     bool regraSegurancaRL(Veiculo *veiculo);
 
     void checkQtdVeiculos() const;
+    void printEstacoesPasso(std::ostream *out) const;
 
 public:
     Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int sizeVeiculo, int qtdEstacoes = 0);

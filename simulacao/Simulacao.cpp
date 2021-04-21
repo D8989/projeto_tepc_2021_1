@@ -12,9 +12,11 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
     int *estacoesIDs = NULL;
     if (qtdEstacoes > 0)
     {
+        this->estadoAtual->cleanAutomato(STOP_LANE, OUT_BOUND);
         estacoesIDs = new int[qtdEstacoes];
         int sizeEstacao = sizeVeiculo;
         int laneSize = sizeVeiculo;
+         // TODO (daniel) Melhorar essa conta
         int sizeTotalEstacao = sizeEstacao + laneSize * 2;
         int espaco = (int)floor((double)sizeRoad / qtdEstacoes);
         if (espaco <= sizeTotalEstacao)
@@ -29,6 +31,20 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
             int posRoadEstacao = (i * espaco) + laneSize + sizeEstacao;
             std::cout << "ESTACAO " << i << " está em " << posRoadEstacao << std::endl;
             this->estacoes[i] = new Estacao(i, posRoadEstacao, sizeEstacao, laneSize, 5);
+            
+            int count = 0;
+            int stationBody = this->estacoes[i]->getBeginStation(sizeRoad);
+
+            while (count < this->estacoes[i]->getTamanhoTotal())
+            {
+                this->estadoAtual->setValue(STOP_LANE, stationBody, EMPTY_CELL);
+                stationBody++;
+                if (stationBody >= sizeRoad)
+                {
+                    stationBody = 0;
+                }
+                count++;
+            } 
         }
     }
 
@@ -308,7 +324,7 @@ void Simulacao::passoVelocidade()
 
 void Simulacao::passoPosicao()
 {
-    estadoAtual->cleanAutomato(EMPTY_CELL);
+    estadoAtual->cleanCars();
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         int road = veiculos[i]->getRoad();
@@ -391,6 +407,7 @@ void Simulacao::print(std::ostream *out) const
 
 void Simulacao::printPasso(std::ostream *out)
 {
+    printEstacoesPasso(out);
     for (size_t i = 0; i < qtdRoad; i++)
     {
         *out << "[" << i << "]\t";
@@ -406,6 +423,10 @@ void Simulacao::printPasso(std::ostream *out)
             case BODY_CAR:
                 *out << "*";
                 break;
+            
+            case OUT_BOUND:
+                *out << " ";
+                break;
 
             default:
                 *out << veiculos[cell]->getVelocidade();
@@ -417,6 +438,33 @@ void Simulacao::printPasso(std::ostream *out)
     *out << std::endl;
 }
 
+void Simulacao::printEstacoesPasso(std::ostream *out) const
+{
+    *out << "[s]\t";
+    int count = 0;
+    int e = 0;
+    while (count < sizeRoad)
+    {
+        if (e < totalEstacoes && estacoes[e]->getStartStation(sizeRoad) == count)
+        {
+            int i = count;
+            int j = 0;
+            while (j < estacoes[e]->getSize())
+            {
+                *out << estacoes[e]->getId();
+                i++;
+                j++;
+            }
+            e++;
+            count = i - 1;
+        } else {
+            *out << " ";
+        }
+        count++;
+    }
+    *out << std::endl;
+}
+
 void Simulacao::setFile(Arquivo *file)
 {
     this->file = file;
@@ -424,7 +472,7 @@ void Simulacao::setFile(Arquivo *file)
 
 void Simulacao::changeRoad()
 {
-    estadoAtual->cleanAutomato(EMPTY_CELL);
+    estadoAtual->cleanCars();
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         if (regraModifacaoRL(veiculos[i]) && regraSegurancaRL(veiculos[i]))
