@@ -16,8 +16,12 @@ private:
     int qtdEstacoes;
     int estacaoAtualId;
 
+    bool stoped;
+    int countTime;
+    const int MaxTime;
+
 public:
-    Veiculo(int id, int vel, int tam = 1, int qtdEstacoes = 0, int *estacoesIds = NULL);
+    Veiculo(int id, int vel, int tam = 1, int qtdEstacoes = 0, int *estacoesIds = NULL, int max = 0);
     ~Veiculo();
 
     unsigned int getId();
@@ -28,6 +32,9 @@ public:
     int getPosRoad();
     int getTamanho();
     void setPos(int road, int posRoad);
+    void carStoped();
+    bool isCarStoped();
+    void checkTime();
 
     int getNextStationID();
 };

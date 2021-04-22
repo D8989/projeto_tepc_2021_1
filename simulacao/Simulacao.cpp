@@ -30,7 +30,7 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
         {
             int posRoadEstacao = (i * espaco) + laneSize + sizeEstacao;
             std::cout << "ESTACAO " << i << " está em " << posRoadEstacao << std::endl;
-            this->estacoes[i] = new Estacao(i, posRoadEstacao, sizeEstacao, laneSize, 5);
+            this->estacoes[i] = new Estacao(i, posRoadEstacao, sizeEstacao, laneSize);
 
             int count = 0;
             int stationBody = this->estacoes[i]->getBeginStation(sizeRoad);
@@ -78,7 +78,7 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
                     e++;
                 }
             }
-            this->veiculos[i] = new Veiculo(i, velRand, sizeVeiculo, qtdEstAux, estacoesIDs);
+            this->veiculos[i] = new Veiculo(i, velRand, sizeVeiculo, qtdEstAux, estacoesIDs, 5);
         }
         else
         {
@@ -301,6 +301,7 @@ int Simulacao::distanceNextObstacle(Veiculo *car) const
 {
     int eId = car->getNextStationID();
     int stationGhostWall = estacoes[eId]->getStartStation(sizeRoad);
+    int stationDoor = estacoes[eId]->getPosRoad();
     int x = car->getRoad();
     int y = car->getPosRoad();
     int count = 0;
@@ -313,7 +314,7 @@ int Simulacao::distanceNextObstacle(Veiculo *car) const
         {
             y = 0;
         }
-        if (estadoAnterior->isCellCar(x, y) || estadoAnterior->isCellOutBound(x, y) || (y == stationGhostWall && x == MAIN_LANE))
+        if (estadoAnterior->isCellCar(x, y) || estadoAnterior->isCellOutBound(x, y) || (y == stationGhostWall && x == MAIN_LANE) || (y == stationDoor && x == STOP_LANE && !car->isCarStoped()))
         {
             obstacleFound = true;
         }
@@ -375,28 +376,35 @@ void Simulacao::passoVelocidade()
 {
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
-        int carVelocidade = veiculos[i]->getVelocidade();
-        int distance = distanceNextObstacle(veiculos[i]);
-        int novaVelocidade = carVelocidade;
-
-        if (carVelocidade < velocityMax && distance >= carVelocidade + 1)
+        if (veiculos[i]->isCarStoped())
         {
-            novaVelocidade = carVelocidade + 1;
+            veiculos[i]->checkTime();
         }
-        else if (carVelocidade > distance)
+        else
         {
-            novaVelocidade = distance;
-        }
+            int carVelocidade = veiculos[i]->getVelocidade();
+            int distance = distanceNextObstacle(veiculos[i]);
+            int novaVelocidade = carVelocidade;
 
-        if (myRandom() < 0.25)
-        {
-            if (novaVelocidade > 0)
+            if (carVelocidade < velocityMax && distance >= carVelocidade + 1)
             {
-                novaVelocidade--;
+                novaVelocidade = carVelocidade + 1;
             }
-        }
+            else if (carVelocidade > distance)
+            {
+                novaVelocidade = distance;
+            }
 
-        veiculos[i]->setVelocidade(novaVelocidade);
+            if (veiculos[i]->getRoad() == MAIN_LANE && myRandom() < 0.25)
+            {
+                if (novaVelocidade > 0)
+                {
+                    novaVelocidade--;
+                }
+            }
+
+            veiculos[i]->setVelocidade(novaVelocidade);
+        }
     }
 }
 
@@ -428,6 +436,10 @@ void Simulacao::passoPosicao()
         }
         estadoAtual->setCar(road, novaPosRoad, veiculos[i]);
         veiculos[i]->setPos(road, novaPosRoad);
+        if (estacoes[veiculos[i]->getNextStationID()]->isCarInStation(veiculos[i]->getPosRoad()))
+        {
+            veiculos[i]->carStoped();
+        }
     }
 }
 
@@ -555,11 +567,11 @@ void Simulacao::changeRoad()
     estadoAtual->cleanCars();
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
-        if (regraModifacaoRL(veiculos[i]) && regraSegurancaRL(veiculos[i]))
+        if (regraModifacaoRL(veiculos[i]) && regraSegurancaRL(veiculos[i])) // Go to STOP_LANE
         {
             veiculos[i]->setPos(veiculos[i]->getRoad() - 1, veiculos[i]->getPosRoad());
         }
-        else if (regraModifacaoLR(veiculos[i]) && regraSegurancaLR(veiculos[i]))
+        else if (regraModifacaoLR(veiculos[i]) && regraSegurancaLR(veiculos[i])) // Go to MAIN_LANE
         {
             veiculos[i]->setPos(veiculos[i]->getRoad() + 1, veiculos[i]->getPosRoad());
         }

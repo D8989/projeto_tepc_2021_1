@@ -1,10 +1,8 @@
 #include <iostream>
 #include "Estacao.hpp"
 
-Estacao::Estacao(int id, int posRoad, int size, int laneSize, int maxTime) : ID(id), posRoad(posRoad), size(size), stopLaneSize(laneSize), MaxTime(maxTime)
+Estacao::Estacao(int id, int posRoad, int size, int laneSize) : ID(id), posRoad(posRoad), size(size), stopLaneSize(laneSize)
 {
-    this->hasCar = false;
-    this->countTime = 0;
 }
 
 Estacao::~Estacao()
@@ -68,36 +66,6 @@ int Estacao::getStartStation(int limite)
     return startStation;
 }
 
-void Estacao::setCar()
-{
-    this->hasCar = true;
-}
-
-void Estacao::removeCar()
-{
-    this->hasCar = false;
-}
-
-bool Estacao::isCarInStation()
-{
-    return this->hasCar;
-}
-
-bool Estacao::isTimeOut()
-{
-    return this->countTime >= this->MaxTime;
-}
-
-void Estacao::addTime()
-{
-    this->countTime = this->countTime + 1;
-}
-
-void Estacao::resetTime()
-{
-    this->countTime = 0;
-}
-
 void Estacao::print()
 {
     std::cout << "ID: " << ID << "PosRoad: " << posRoad << std::endl;
@@ -111,4 +79,9 @@ bool Estacao::isCarInStopLineIn(int posCar, int limite)
 bool Estacao::isCarInStopLineOut(int posCar, int limite)
 {
     return posCar > this->posRoad && posCar < this->posRoad + this->stopLaneSize;
+}
+
+bool Estacao::isCarInStation(int posCar)
+{
+    return posCar == this->posRoad - 1;
 }

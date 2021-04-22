@@ -10,15 +10,12 @@ private:
     int size;
     int posRoad;
     int stopLaneSize; // aprox zone
-    bool hasCar;
-    int countTime;
-    const int MaxTime;
 
     void addTime();
     void resetTime();
 
 public:
-    Estacao(int id, int posRoad, int size, int laneSize, int maxTime);
+    Estacao(int id, int posRoad, int size, int laneSize);
     ~Estacao();
 
     int getId();
@@ -28,13 +25,11 @@ public:
     int getPosRoad();
     int getBeginStation(int limite); // size + stop lane
     int getStartStation(int limite); // size
-    void setCar();
-    void removeCar();
-    bool isCarInStation();
     bool isTimeOut();
 
     bool isCarInStopLineIn(int posCar, int limite);
     bool isCarInStopLineOut(int posCar, int limite);
+    bool isCarInStation(int posCar);
 
     void print();
 };

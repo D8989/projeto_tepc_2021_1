@@ -1,8 +1,10 @@
 #include "Veiculo.hpp"
 #include <iostream>
 
-Veiculo::Veiculo(int id, int vel, int tam, int qtdEstacoes, int *estacoesIds) : ID(id), velocidade(vel), tamanho(tam)
+Veiculo::Veiculo(int id, int vel, int tam, int qtdEstacoes, int *estacoesIds, int max) : ID(id), velocidade(vel), tamanho(tam), MaxTime(max)
 {
+    this->countTime = 0;
+    this->stoped = false;
     if (qtdEstacoes > 0)
     {
         this->qtdEstacoes = qtdEstacoes;
@@ -41,7 +43,7 @@ void Veiculo::setVelocidade(int vel)
 
 void Veiculo::print(std::ostream *out)
 {
-    *out << "Veiculo " << this->ID << "; V = " << this->velocidade << "; P(" << road << ", " << posRoad << ")";
+    *out << "Veiculo " << this->ID << "; V = " << this->velocidade << "; P(" << road << ", " << posRoad << "); Stop = " << stoped << "; count = " << countTime;
 
     if (qtdEstacoes > 0)
     {
@@ -87,4 +89,26 @@ int Veiculo::getTamanho()
 int Veiculo::getNextStationID()
 {
     return estacoesId[estacaoAtualId];
+}
+
+void Veiculo::carStoped()
+{
+    this->stoped = true;
+    this->velocidade = 0;
+}
+
+bool Veiculo::isCarStoped()
+{
+    return this->stoped;
+}
+
+void Veiculo::checkTime()
+{
+    this->countTime++;
+    if (this->countTime > this->MaxTime)
+    {
+        this->stoped = false;
+        this->countTime = 0;
+        this->velocidade = 1;
+    }
 }
