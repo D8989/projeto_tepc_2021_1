@@ -112,3 +112,12 @@ void Veiculo::checkTime()
         this->velocidade = 1;
     }
 }
+
+void Veiculo::setNextStationID()
+{
+    this->estacaoAtualId++;
+    if (this->estacaoAtualId == this->qtdEstacoes)
+    {
+        this->estacaoAtualId = 0;
+    }
+}

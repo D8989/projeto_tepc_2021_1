@@ -37,6 +37,7 @@ public:
     void checkTime();
 
     int getNextStationID();
+    void setNextStationID();
 };
 
 #endif
