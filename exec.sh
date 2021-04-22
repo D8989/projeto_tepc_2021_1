@@ -1,7 +1,7 @@
 # Projeto de Tópicos Especiais em Programação de Computador
 # author: Daniel Juventude Moreira
 
-./a.out 100 120 5  1  7  4  1
+./a.out 100 150 3  5  7  4  1
 #       |   |   |  |  |  |  | 0-imprime no terminal; 1-cria arquivo
 #       |   |   |  |  |  |
 #       |   |   |  |  |  | comprimento dos veículos
