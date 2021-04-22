@@ -574,6 +574,7 @@ void Simulacao::changeRoad()
         else if (regraModifacaoLR(veiculos[i]) && regraSegurancaLR(veiculos[i])) // Go to MAIN_LANE
         {
             veiculos[i]->setPos(veiculos[i]->getRoad() + 1, veiculos[i]->getPosRoad());
+            veiculos[i]->setNextStationID();
         }
         estadoAtual->setCar(veiculos[i]->getRoad(), veiculos[i]->getPosRoad(), veiculos[i]);
     }
