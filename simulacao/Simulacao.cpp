@@ -390,7 +390,11 @@ void Simulacao::passoVelocidade()
         {
             veiculos[i]->checkTime();
         }
-        else
+    }
+
+    for (size_t i = 0; i < qtdVeiculos; i++)
+    {
+        if (!veiculos[i]->isCarStoped())
         {
             int carVelocidade = veiculos[i]->getVelocidade();
             int distance = distanceNextObstacle(veiculos[i]);
