@@ -5,6 +5,7 @@ Veiculo::Veiculo(int id, int vel, int tam, int qtdEstacoes, int *estacoesIds, in
 {
     this->countTime = 0;
     this->stoped = false;
+    this->willMove = true;
     if (qtdEstacoes > 0)
     {
         this->qtdEstacoes = qtdEstacoes;
@@ -108,8 +109,8 @@ void Veiculo::checkTime()
     if (this->countTime > this->MaxTime)
     {
         this->stoped = false;
+        this->willMove = true;
         this->countTime = 0;
-        this->velocidade = 1;
     }
 }
 
@@ -120,4 +121,14 @@ void Veiculo::setNextStationID()
     {
         this->estacaoAtualId = 0;
     }
+}
+
+void Veiculo::carWillStop()
+{
+    this->willMove = false;
+}
+
+bool Veiculo::isCarMove()
+{
+    return this->willMove;
 }

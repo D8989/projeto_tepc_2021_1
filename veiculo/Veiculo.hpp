@@ -16,6 +16,7 @@ private:
     int qtdEstacoes;
     int estacaoAtualId;
 
+    bool willMove;
     bool stoped;
     int countTime;
     const int MaxTime;
@@ -35,6 +36,8 @@ public:
     void carStoped();
     bool isCarStoped();
     void checkTime();
+    void carWillStop();
+    bool isCarMove();
 
     int getNextStationID();
     void setNextStationID();
