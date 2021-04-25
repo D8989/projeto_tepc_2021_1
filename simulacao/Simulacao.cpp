@@ -320,7 +320,11 @@ int Simulacao::distanceNextObstacle(Veiculo *car) const
         {
             y = 0;
         }
-        if (estadoAnterior->isCellCar(x, y) || estadoAnterior->isCellOutBound(x, y) || (y == stationGhostWall && x == MAIN_LANE) || (y == stationDoor && x == STOP_LANE && !car->isCarStoped()))
+        if (
+            estadoAnterior->isCellCar(x, y) ||
+            estadoAnterior->isCellOutBound(x, y) ||
+            (y == stationGhostWall && x == MAIN_LANE) ||
+            (y == stationDoor && x == STOP_LANE && !car->isCarMove()))
         {
             obstacleFound = true;
         }
@@ -442,7 +446,7 @@ void Simulacao::passoPosicao()
         }
         estadoAtual->setCar(road, novaPosRoad, veiculos[i]);
         veiculos[i]->setPos(road, novaPosRoad);
-        if (estacoes[veiculos[i]->getNextStationID()]->isCarInStation(veiculos[i]->getPosRoad()))
+        if (!veiculos[i]->isCarMove() && estacoes[veiculos[i]->getNextStationID()]->isCarInStation(veiculos[i]->getPosRoad()))
         {
             veiculos[i]->carStoped();
         }
@@ -578,6 +582,7 @@ void Simulacao::changeRoad()
         if (regraModifacaoRL(veiculos[i]) && regraSegurancaRL(veiculos[i])) // Go to STOP_LANE
         {
             veiculos[i]->setPos(veiculos[i]->getRoad() - 1, veiculos[i]->getPosRoad());
+            veiculos[i]->carWillStop();
         }
         else if (regraModifacaoLR(veiculos[i]) && regraSegurancaLR(veiculos[i])) // Go to MAIN_LANE
         {
