@@ -652,28 +652,15 @@ bool Simulacao::regraSegurancaLR(Veiculo *veiculo) // STOP_LANE to MAIN_LANE
 {
     bool regraBackCar = false;
     int rigthRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::left_to_rigth);
-    if (rigthRoad == OUT_BOUND || !estadoAnterior->isCarFit(rigthRoad, veiculo->getPosRoad(), veiculo))
+    if (rigthRoad != OUT_BOUND && estadoAnterior->isCarFit(rigthRoad, veiculo->getPosRoad(), veiculo))
     {
-        return false;
+        return true;
     }
 
-    Veiculo *previousCar = getPreviousCar(veiculo, rigthRoad);
-    if (!previousCar)
-    {
-        regraBackCar = true;
-    }
-    else
-    {
-        int distBackCar = distancePreviousCar(veiculo, rigthRoad);
-        regraBackCar = distBackCar >= previousCar->getVelocidade();
-    }
-
-    int distNextCar = distanceNextCar(veiculo, rigthRoad);
-
-    return regraBackCar && distNextCar >= veiculo->getVelocidade();
+    return false;
 }
 
-bool Simulacao::regraSegurancaRL(Veiculo *veiculo)
+bool Simulacao::regraSegurancaRL(Veiculo *veiculo) // MAIN_LANE to STOP_LANE
 {
     bool regraBackCar = false;
     int leftRoad = this->getVeiculoSideRoad(veiculo->getRoad(), Direcao::rigth_to_left);
