@@ -447,7 +447,7 @@ void Simulacao::run(int qtdPassos)
 {
     if (file == NULL)
     {
-        runWithPrint(qtdPassos, &std::cout);
+        runWithoutPrint(qtdPassos);
     }
     else
     {
@@ -473,6 +473,8 @@ void Simulacao::runWithoutPrint(int qtdPassos)
 {
     for (size_t i = 0; i < qtdPassos; i++)
     {
+        changeRoad();
+        copyAtualToAnterior();
         passoVelocidade();
         passoPosicao();
         copyAtualToAnterior();

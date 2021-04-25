@@ -54,6 +54,8 @@ private:
 
     int getNextStationID(Veiculo *veiculo) const;
 
+    bool isRoadLongEnouth(int qtdCarros, int sizeCarro, int roadSize) const;
+
 public:
     Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int sizeVeiculo, int qtdEstacoes = 0);
     ~Simulacao();
