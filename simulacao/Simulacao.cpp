@@ -5,6 +5,12 @@
 
 Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int sizeVeiculo, int qtdEstacoes) : qtdRoad(qtdRoads), sizeRoad(sizeRoad), qtdVeiculos(qtdVeiculos), velocityMax(vMax)
 {
+    if (!isRoadLongEnouth(qtdVeiculos, sizeVeiculo, sizeRoad))
+    {
+        std::cerr << "ERROR::SIMULACAO::Simulacao::A pista é pequena para essa quantidade de carros\n";
+        exit(EXIT_FAILURE);
+    }
+
     this->file = NULL;
     this->estadoAtual = new Automata(sizeRoad, qtdRoads);
 
@@ -712,4 +718,9 @@ void Simulacao::printDados(std::ostream *out) const
     *out << "comprimento das pistas: " << sizeRoad << std::endl;
     *out << "Quantidade de veículos: " << qtdVeiculos << std::endl;
     *out << "Velocidade Máxima: " << velocityMax << std::endl;
+}
+
+bool Simulacao::isRoadLongEnouth(int qtdCarros, int sizeCarro, int roadSize) const
+{
+    return roadSize > qtdCarros * sizeCarro + qtdCarros * (sizeCarro - 1);
 }
