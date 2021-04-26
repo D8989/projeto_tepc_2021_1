@@ -152,6 +152,7 @@ void Simulacao::copyAtualToAnterior()
 {
     for (size_t i = 0; i < qtdRoad; i++)
     {
+#pragma omp for
         for (size_t j = 0; j < sizeRoad; j++)
         {
             estadoAnterior->setValue(i, j, estadoAtual->getCell(i, j));
@@ -384,6 +385,7 @@ int Simulacao::distancePreviousCar(Veiculo *v, int road) const
 
 void Simulacao::passoVelocidade()
 {
+#pragma omp for
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         if (veiculos[i]->isCarStoped())
@@ -392,6 +394,7 @@ void Simulacao::passoVelocidade()
         }
     }
 
+#pragma omp for
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         if (!veiculos[i]->isCarStoped())
@@ -425,6 +428,8 @@ void Simulacao::passoVelocidade()
 void Simulacao::passoPosicao()
 {
     estadoAtual->cleanCars();
+
+#pragma omp for
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         int road = veiculos[i]->getRoad();
@@ -473,8 +478,13 @@ void Simulacao::runWithPrint(int qtdPassos, std::ostream *out)
 {
     for (size_t i = 0; i < qtdPassos; i++)
     {
-        checkQtdVeiculos(); // Check para ver se algum veículo se perdeu
-        printPasso(out);
+#pragma omp single
+        {
+            checkQtdVeiculos(); // Check para ver se algum veículo se perdeu
+            printPasso(out);
+        }
+#pragma omp barrier
+
         changeRoad();
         copyAtualToAnterior();
         passoVelocidade();
@@ -487,6 +497,8 @@ void Simulacao::runWithoutPrint(int qtdPassos)
 {
     for (size_t i = 0; i < qtdPassos; i++)
     {
+#pragma omp barrier
+
         changeRoad();
         copyAtualToAnterior();
         passoVelocidade();
@@ -581,6 +593,8 @@ void Simulacao::setFile(Arquivo *file)
 void Simulacao::changeRoad()
 {
     estadoAtual->cleanCars();
+
+#pragma omp for
     for (size_t i = 0; i < qtdVeiculos; i++)
     {
         if (regraModifacaoRL(veiculos[i]) && regraSegurancaRL(veiculos[i])) // Go to STOP_LANE

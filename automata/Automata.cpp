@@ -44,7 +44,7 @@ void Automata::print(std::ostream *out)
             case BODY_CAR:
                 *out << "*";
                 break;
-            
+
             case OUT_BOUND:
                 *out << " ";
                 break;
@@ -139,13 +139,13 @@ void Automata::cleanAutomato(int x, int value)
     {
         this->setValue(x, y, value);
     }
-    
 }
 
 void Automata::cleanCars()
 {
     for (size_t x = 0; x < qtdRoad; x++)
     {
+#pragma omp for
         for (size_t y = 0; y < sizeRoad; y++)
         {
             if (!this->isCellOutBound(x, y))

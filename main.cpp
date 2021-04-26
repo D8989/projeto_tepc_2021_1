@@ -8,11 +8,21 @@
 int main(int argc, const char *argv[])
 {
     srand(time(NULL));
-
-    if (argc != 8)
+    int qtdThreads = 0;
+    if (argc < 8)
     {
         std::cout << "Deve-se passar 6 parametros inteiros: qtd_passos tamanho_pista qtd_estacoes qtd_carros vel_max tamanho_veiculos salvar_Arquivo\n";
         exit(EXIT_FAILURE);
+    }
+
+    if (argc == 9)
+    {
+        qtdThreads = atoi(argv[8]);
+        if (qtdThreads < 0)
+        {
+            std::cerr << "Deve-se passar algum valor positivo para as trheads." << std::endl;
+            exit(EXIT_FAILURE);
+        }
     }
     int qtdPassos = atoi(argv[1]);
     int comprimentoPista = atoi(argv[2]);
@@ -34,7 +44,10 @@ int main(int argc, const char *argv[])
         s.setFile(arq);
     }
 
-    s.run(qtdPassos);
+#pragma omp parallel num_threads(qtdThreads)
+    {
+        s.run(qtdPassos);
+    }
 
     return 0;
 }
