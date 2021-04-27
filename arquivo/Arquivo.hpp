@@ -16,9 +16,12 @@ public:
     void open(const char *pathFileName);
     void openBin(const char *pathFileName);
     void write(const char *line);
+    void write(const char *line, const char *endLine);
     void writeBin(char *, int);
     std::ofstream *getStream();
     std::string montarNome(const char **nomes, int size);
+
+    void flushOfFile();
 };
 
 #endif

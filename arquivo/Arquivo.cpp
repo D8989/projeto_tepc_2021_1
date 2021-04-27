@@ -38,6 +38,11 @@ void Arquivo::write(const char *line)
     ofFile << line << std::endl;
 }
 
+void Arquivo::write(const char *line, const char *endline)
+{
+    ofFile << line << endline;
+}
+
 void Arquivo::writeBin(char *pointer, int size)
 {
 }
@@ -84,4 +89,9 @@ std::string Arquivo::montarNome(const char **nomes, int size)
     }
 
     return nomeFinal;
+}
+
+void Arquivo::flushOfFile()
+{
+    this->ofFile.flush();
 }
