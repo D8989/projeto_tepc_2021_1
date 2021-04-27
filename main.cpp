@@ -35,6 +35,12 @@ int main(int argc, const char *argv[])
     Simulacao s(comprimentoPista, 2, qtdCarros, velocidadeMax, tamanhoVeiculo, qtdEstacoes);
     s.printDados(&std::cout);
     Arquivo *arq = new Arquivo();
+    Arquivo *arqStatic = new Arquivo();
+
+    const char *paramStatic[] = {"result_static", argv[1], argv[2], argv[4], argv[5]};
+    std::string nomeArqStatic = arqStatic->montarNome(paramStatic, 5);
+    arqStatic->open(nomeArqStatic.c_str());
+    s.setFileStatic(arqStatic);
 
     if (salvarEmArquivo)
     {

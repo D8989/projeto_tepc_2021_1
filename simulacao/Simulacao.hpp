@@ -25,6 +25,9 @@ private:
     Veiculo **veiculos = NULL;
     Estacao **estacoes = NULL;
     Arquivo *file = NULL;
+    Arquivo *fileStatic = NULL;
+    int startStatic;
+    int passoStatic;
     int velocityMax;
     int qtdRoad;
     int sizeRoad;
@@ -56,6 +59,8 @@ private:
 
     bool isRoadLongEnouth(int qtdCarros, int sizeCarro, int roadSize) const;
 
+    void writePassoVelocidadeMedia(int passo) const;
+
 public:
     Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int sizeVeiculo, int qtdEstacoes = 0);
     ~Simulacao();
@@ -68,6 +73,7 @@ public:
     void printPasso(std::ostream *out);
     void printDados(std::ostream *out) const;
     void setFile(Arquivo *file);
+    void setFileStatic(Arquivo *file);
 
     void changeRoad();
 };

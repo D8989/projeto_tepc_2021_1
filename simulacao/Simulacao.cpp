@@ -12,6 +12,9 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
     }
 
     this->file = NULL;
+    this->fileStatic = NULL;
+    this->startStatic = 100;
+    this->passoStatic = 120;
     this->estadoAtual = new Automata(sizeRoad, qtdRoads);
 
     this->totalEstacoes = qtdEstacoes;
@@ -490,6 +493,15 @@ void Simulacao::runWithPrint(int qtdPassos, std::ostream *out)
         passoVelocidade();
         passoPosicao();
         copyAtualToAnterior();
+
+#pragma omp single
+        {
+            if (startStatic < i && i % passoStatic == 0)
+            {
+                writePassoVelocidadeMedia(i);
+            }
+        }
+#pragma omp barrier
     }
 }
 
@@ -504,6 +516,15 @@ void Simulacao::runWithoutPrint(int qtdPassos)
         passoVelocidade();
         passoPosicao();
         copyAtualToAnterior();
+
+#pragma omp single
+        {
+            if (startStatic < i && i % passoStatic == 0)
+            {
+                writePassoVelocidadeMedia(i);
+            }
+        }
+#pragma omp barrier
     }
 }
 
@@ -588,6 +609,11 @@ void Simulacao::printEstacoesPasso(std::ostream *out) const
 void Simulacao::setFile(Arquivo *file)
 {
     this->file = file;
+}
+
+void Simulacao::setFileStatic(Arquivo *file)
+{
+    this->fileStatic = file;
 }
 
 void Simulacao::changeRoad()
@@ -733,4 +759,18 @@ void Simulacao::printDados(std::ostream *out) const
 bool Simulacao::isRoadLongEnouth(int qtdCarros, int sizeCarro, int roadSize) const
 {
     return roadSize > qtdCarros * sizeCarro + qtdCarros * (sizeCarro - 1);
+}
+
+void Simulacao::writePassoVelocidadeMedia(int passo) const
+{
+    double sum = 0.0;
+    for (int i = 0; i < qtdVeiculos; i++)
+    {
+        sum += this->veiculos[i]->getVelocidade();
+    }
+    sum /= qtdVeiculos;
+
+    std::string passoLine = std::to_string(passo) + "\t" + std::to_string(sum);
+    this->fileStatic->write(passoLine.c_str(), "\n");
+    this->fileStatic->flushOfFile();
 }
