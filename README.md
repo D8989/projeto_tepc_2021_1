@@ -4,3 +4,5 @@ Projeto de simulação de veículos para a disciplina de Tópicos Especiais de P
 ## Limitações do projeto:
 * O tamanho da estação sempre será do mesmo tamanho do veículo.
 * Todos os veículos possuem o mesmo tamanho
+
+## Versão entregue: v2.2.0
