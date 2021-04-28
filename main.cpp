@@ -33,7 +33,6 @@ int main(int argc, const char *argv[])
     int salvarEmArquivo = atoi(argv[7]);
 
     Simulacao s(comprimentoPista, 2, qtdCarros, velocidadeMax, tamanhoVeiculo, qtdEstacoes);
-    s.printDados(&std::cout);
     Arquivo *arq = new Arquivo();
     Arquivo *arqStatic = new Arquivo();
 

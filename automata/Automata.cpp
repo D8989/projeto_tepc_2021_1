@@ -13,14 +13,13 @@ Automata::Automata(unsigned int size, unsigned int qtd) : sizeRoad(size),
 Automata::~Automata()
 {
     delete this->automato;
-    std::cout << "VETOR AUTOMATO LIVRE\n";
 }
 
 int Automata::pos(int x, int y)
 {
     if (x < 0 || x >= qtdRoad || y < 0 || y >= sizeRoad)
     {
-        std::cout << "ERROR::OUTBOUND::Posicao (" << x << ", " << y << ") fora do automato" << std::endl;
+        std::cerr << "ERROR::OUTBOUND::Posicao (" << x << ", " << y << ") fora do automato" << std::endl;
         this->~Automata();
         exit(EXIT_FAILURE);
     }

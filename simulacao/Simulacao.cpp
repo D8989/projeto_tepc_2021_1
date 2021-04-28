@@ -38,7 +38,6 @@ Simulacao::Simulacao(int sizeRoad, int qtdRoads, int qtdVeiculos, int vMax, int 
         for (int i = 0; i < qtdEstacoes; i++)
         {
             int posRoadEstacao = (i * espaco) + laneSize + sizeEstacao;
-            std::cout << "ESTACAO " << i << " está em " << posRoadEstacao << std::endl;
             this->estacoes[i] = new Estacao(i, posRoadEstacao, sizeEstacao, laneSize);
 
             int count = 0;
@@ -184,7 +183,7 @@ Veiculo *Simulacao::getNextCar(Veiculo *v) const
         {
             if (v->getId() == veiculos[veiculoIndex]->getId())
             {
-                std::cout << "ERROR::SIMULACAO::NEXTCAR::ACHOU O MESMO CARRO\n";
+                std::cerr << "ERROR::SIMULACAO::NEXTCAR::ACHOU O MESMO CARRO\n";
                 this->~Simulacao();
                 exit(EXIT_FAILURE);
             }
@@ -193,7 +192,7 @@ Veiculo *Simulacao::getNextCar(Veiculo *v) const
         }
         if (count > sizeRoad)
         {
-            std::cout << "ERROR::SIMULACAO::NEXTCAR::NAO_ACHOU NENHUM CARRO\n";
+            std::cerr << "ERROR::SIMULACAO::NEXTCAR::NAO_ACHOU NENHUM CARRO\n";
             this->~Simulacao();
             exit(EXIT_FAILURE);
         }
@@ -247,7 +246,7 @@ int Simulacao::distanceNextCar(Veiculo *v, int road) const
         {
             if (count == sizeRoad)
             {
-                std::cout << "ERROR::SIMULACAO::distanceNextCar::ENCONTROU ELE MESMO\n";
+                std::cerr << "ERROR::SIMULACAO::distanceNextCar::ENCONTROU ELE MESMO\n";
                 this->~Simulacao();
                 exit(EXIT_FAILURE);
             }
@@ -255,7 +254,7 @@ int Simulacao::distanceNextCar(Veiculo *v, int road) const
         }
         if (count >= sizeRoad)
         {
-            std::cout << "ERROR::SIMULACAO::distanceNextCar::NAO_ACHOU NENHUM CARRO\n";
+            std::cerr << "ERROR::SIMULACAO::distanceNextCar::NAO_ACHOU NENHUM CARRO\n";
             this->~Simulacao();
             exit(EXIT_FAILURE);
         }
@@ -377,7 +376,7 @@ int Simulacao::distancePreviousCar(Veiculo *v, int road) const
         }
         if (count >= sizeRoad)
         {
-            std::cout << "ERROR::SIMULACAO::distancePreviousCar::NAO_ACHOU NENHUM CARRO\n";
+            std::cerr << "ERROR::SIMULACAO::distancePreviousCar::NAO_ACHOU NENHUM CARRO\n";
             this->~Simulacao();
             exit(EXIT_FAILURE);
         }
@@ -451,7 +450,7 @@ void Simulacao::passoPosicao()
 
         if (!estadoAtual->isCarFit(road, novaPosRoad, veiculos[i]))
         {
-            std::cout << "ERROR::SIMULACAO::passoPosicao::Celula (" << road << ", " << novaPosRoad << ") está ocupada com o carro " << estadoAtual->getCell(road, novaPosRoad) << "; não está livre para colocar o carro " << veiculos[i]->getId() << std::endl;
+            std::cerr << "ERROR::SIMULACAO::passoPosicao::Celula (" << road << ", " << novaPosRoad << ") está ocupada com o carro " << estadoAtual->getCell(road, novaPosRoad) << "; não está livre para colocar o carro " << veiculos[i]->getId() << std::endl;
             print(file->getStream());
             this->~Simulacao();
             exit(EXIT_FAILURE);
@@ -652,7 +651,7 @@ int Simulacao::getVeiculoSideRoad(int roadAtual, Direcao dir)
     }
     else
     {
-        std::cout << "ERROR::SIMULACAO::getVeiculoSideRoad::Direcao desconhecida" << std::endl;
+        std::cerr << "ERROR::SIMULACAO::getVeiculoSideRoad::Direcao desconhecida" << std::endl;
         this->~Simulacao();
         exit(EXIT_FAILURE);
     }
@@ -670,7 +669,7 @@ bool Simulacao::regraModifacao(int veicId, Direcao dir)
     }
     else
     {
-        std::cout << "ERROR::SIMULACAO::regraModifacao::Direcao desconhecida" << std::endl;
+        std::cerr << "ERROR::SIMULACAO::regraModifacao::Direcao desconhecida" << std::endl;
         this->~Simulacao();
         exit(EXIT_FAILURE);
     }
@@ -741,7 +740,7 @@ void Simulacao::checkQtdVeiculos() const
 
     if (count != qtdVeiculos)
     {
-        std::cout << "ERRO::SIMULACAL::checkQtdVeiculos::Algum veículo se perdeu\n";
+        std::cerr << "ERRO::SIMULACAL::checkQtdVeiculos::Algum veículo se perdeu\n";
         file->write("ERRO::SIMULACAL::checkQtdVeiculos::Algum veículo se perdeu\n");
         this->print(file->getStream());
         this->~Simulacao();

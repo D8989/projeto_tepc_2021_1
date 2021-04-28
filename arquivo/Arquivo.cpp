@@ -24,7 +24,7 @@ void Arquivo::open(const char *pathFileName)
     ofFile.open(pathFileName);
     if (!ofFile.is_open())
     {
-        std::cout << "ERROR::ARQUIVO_CPP::open::Arquivo \"" << pathFileName << "\" não foi aberto\n";
+        std::cerr << "ERROR::ARQUIVO_CPP::open::Arquivo \"" << pathFileName << "\" não foi aberto\n";
         exit(EXIT_FAILURE);
     }
 }
